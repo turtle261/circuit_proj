@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="450" height="250" xmlns="http://www.w3.org/2000/svg">
+  <title>Sensor Interface Circuit</title>
+
+  <!-- Background -->
+  <rect width="450" height="250" fill="white" stroke="black" stroke-width="1"/>
+
+  <!-- Arduino Uno -->
+  <rect x="20" y="40" width="80" height="60" fill="lightblue" stroke="black" stroke-width="1"/>
+  <text x="60" y="65" text-anchor="middle" font-family="Arial" font-size="12">Arduino</text>
+  <text x="60" y="80" text-anchor="middle" font-family="Arial" font-size="10">Uno R3</text>
+
+  <!-- Sensor -->
+  <rect x="200" y="55" width="50" height="30" fill="yellow" stroke="black" stroke-width="1"/>
+  <text x="225" y="75" text-anchor="middle" font-family="Arial" font-size="10">Sensor</text>
+
+  <!-- Pull-up Resistor -->
+  <rect x="150" y="40" width="30" height="10" fill="lightgray" stroke="black" stroke-width="1"/>
+  <text x="165" y="35" text-anchor="middle" font-family="Arial" font-size="8">R1</text>
+  <text x="165" y="65" text-anchor="middle" font-family="Arial" font-size="8">10kΩ</text>
+
+  <!-- LED Indicator -->
+  <circle cx="320" cy="70" r="8" fill="red" stroke="black" stroke-width="1"/>
+  <text x="320" y="55" text-anchor="middle" font-family="Arial" font-size="8">LED</text>
+
+  <!-- Resistor for LED -->
+  <rect x="280" y="65" width="25" height="8" fill="lightgray" stroke="black" stroke-width="1"/>
+  <text x="292" y="60" text-anchor="middle" font-family="Arial" font-size="8">R2</text>
+  <text x="292" y="85" text-anchor="middle" font-family="Arial" font-size="8">330Ω</text>
+
+  <!-- Wires -->
+  <line x1="100" y1="60" x2="150" y2="60" stroke="red" stroke-width="2"/>
+  <line x1="180" y1="45" x2="200" y2="45" stroke="red" stroke-width="2"/>
+  <line x1="200" y1="45" x2="200" y2="55" stroke="red" stroke-width="2"/>
+  <line x1="165" y1="50" x2="165" y2="70" stroke="blue" stroke-width="2"/>
+  <line x1="165" y1="70" x2="200" y2="70" stroke="blue" stroke-width="2"/>
+  <line x1="250" y1="70" x2="280" y2="70" stroke="green" stroke-width="2"/>
+  <line x1="305" y1="70" x2="312" y2="70" stroke="green" stroke-width="2"/>
+
+  <!-- Pin labels -->
+  <text x="105" y="55" font-family="Arial" font-size="8">5V</text>
+  <text x="105" y="75" font-family="Arial" font-size="8">A0</text>
+  <text x="105" y="95" font-family="Arial" font-size="8">D13</text>
+
+  <!-- Title -->
+  <text x="225" y="20" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">Sensor Interface Circuit</text>
+</svg>

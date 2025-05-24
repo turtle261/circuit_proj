@@ -130,18 +130,53 @@
                         <!-- Example Buttons -->
                         <div class="example-buttons">
                             <p class="text-muted mb-2">Try these examples:</p>
-                            <button class="btn btn-outline-secondary btn-sm example-btn" 
-                                    onclick="setExample('Design a circuit to blink an LED every second')">
-                                LED Blinker
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm example-btn" 
-                                    onclick="setExample('Create a circuit with an LED that turns on when a button is pressed')">
-                                Button LED
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm example-btn" 
-                                    onclick="setExample('Design a circuit with a red LED that has brightness inverse to room loudness')">
-                                Sound-Reactive LED
-                            </button>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6 class="text-primary">LED Circuits</h6>
+                                    <button class="btn btn-outline-primary btn-sm example-btn mb-1" 
+                                            onclick="setExample('Design a circuit to blink an LED every second')">
+                                        LED Blinker
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm example-btn mb-1" 
+                                            onclick="setExample('Create a circuit with an LED that turns on when a button is pressed')">
+                                        Button LED
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm example-btn mb-1" 
+                                            onclick="setExample('Design a circuit with a red LED that has brightness inverse to room loudness')">
+                                        Sound-Reactive LED
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="text-success">Motor Control</h6>
+                                    <button class="btn btn-outline-success btn-sm example-btn mb-1" 
+                                            onclick="setExample('Design a motor control circuit with variable speed')">
+                                        Variable Speed Motor
+                                    </button>
+                                    <button class="btn btn-outline-success btn-sm example-btn mb-1" 
+                                            onclick="setExample('Create a servo motor control circuit for precise positioning')">
+                                        Servo Control
+                                    </button>
+                                    <button class="btn btn-outline-success btn-sm example-btn mb-1" 
+                                            onclick="setExample('Design a stepper motor driver circuit')">
+                                        Stepper Motor
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="text-warning">Sensors</h6>
+                                    <button class="btn btn-outline-warning btn-sm example-btn mb-1" 
+                                            onclick="setExample('Design a temperature sensor circuit with LCD display')">
+                                        Temperature Sensor
+                                    </button>
+                                    <button class="btn btn-outline-warning btn-sm example-btn mb-1" 
+                                            onclick="setExample('Create a light sensor circuit that controls LED brightness')">
+                                        Light Sensor
+                                    </button>
+                                    <button class="btn btn-outline-warning btn-sm example-btn mb-1" 
+                                            onclick="setExample('Design an ultrasonic distance sensor circuit')">
+                                        Distance Sensor
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <form id="designForm">
@@ -475,9 +510,7 @@
             }
             
             // Display Arduino code
-            if (data.crew_result) {
-                displayArduinoCode(data.crew_result);
-            }
+            displayArduinoCode(data);
             
             // Show download section
             document.getElementById('downloadSection').style.display = 'block';
@@ -490,8 +523,15 @@
             let circuitDescription = "Your circuit has been successfully designed and simulated!";
             let circuitType = data.circuit_type || "custom";
             
-            if (data.crew_result && typeof data.crew_result === 'string') {
-                // Try to extract project description
+            // Generate circuit-specific descriptions
+            if (circuitType === 'led') {
+                circuitDescription = "This project details the construction and testing of an LED circuit. The circuit is designed to control LED brightness and blinking patterns using an Arduino microcontroller with current-limiting resistors for safe operation.";
+            } else if (circuitType === 'motor') {
+                circuitDescription = "This project details the construction and testing of a motor control circuit. The circuit is designed to control motor speed and direction using PWM signals from an Arduino with appropriate driver circuits for power management.";
+            } else if (circuitType === 'sensor') {
+                circuitDescription = "This project details the construction and testing of a sensor interface circuit. The circuit is designed to read analog sensor values and process them through an Arduino with signal conditioning and filtering.";
+            } else if (data.crew_result && typeof data.crew_result === 'string') {
+                // Try to extract project description from CrewAI result
                 const descMatch = data.crew_result.match(/## 1\. Project Overview\s*([\s\S]*?)##/);
                 if (descMatch) {
                     const desc = descMatch[1].trim().split('\n')[0];
@@ -501,12 +541,18 @@
                 }
             }
             
+            // Determine status message
+            let statusMessage = "Design completed successfully with CrewAI agents and simulation validation.";
+            if (data.phase_2_1_enabled) {
+                statusMessage = "Design completed successfully with CrewAI agents and Phase 2.1 advanced simulation validation.";
+            }
+            
             overview.innerHTML = `
                 <h6>Design Summary</h6>
                 <p>${circuitDescription}</p>
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i>
-                    Design completed successfully with CrewAI agents and simulation validation.
+                    ${statusMessage}
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -516,6 +562,16 @@
                         <strong>Status:</strong> <span class="text-success">Complete</span>
                     </div>
                 </div>
+                ${data.phase_2_1_enabled ? `
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-microchip"></i>
+                            <strong>Phase 2.1 Features:</strong> Advanced simulation with AC analysis, noise analysis, Monte Carlo, and temperature analysis enabled.
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
             `;
             
             // Display component list if available
@@ -526,18 +582,18 @@
             componentsHtml += `
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     Arduino Uno R3
-                    <span class="badge bg-primary rounded-pill">1</span>
+                    <span class="badge bg-primary rounded-pill"><i class="fas fa-info-circle" title="Microcontroller board"></i></span>
                 </li>
             `;
             
-            // Add components from data
-            if (data.components) {
+            // Add components based on circuit type and data
+            if (data.components && (data.components.resistor || data.components.led)) {
                 if (data.components.resistor) {
                     const resistor = data.components.resistor.component || data.components.resistor;
                     componentsHtml += `
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             ${resistor.name || resistor.value + 'Ω Resistor'}
-                            <span class="badge bg-primary rounded-pill">1</span>
+                            <span class="badge bg-secondary rounded-pill">1</span>
                         </li>
                     `;
                 }
@@ -546,22 +602,81 @@
                     componentsHtml += `
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             ${led.name || led.color + ' LED'}
-                            <span class="badge bg-primary rounded-pill">1</span>
+                            <span class="badge bg-danger rounded-pill">1</span>
                         </li>
                     `;
                 }
             } else {
-                // Default components
-                componentsHtml += `
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        220Ω Resistor (1/4W)
-                        <span class="badge bg-primary rounded-pill">1</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Red LED (5mm)
-                        <span class="badge bg-primary rounded-pill">1</span>
-                    </li>
-                `;
+                // Circuit-type specific default components
+                if (circuitType === 'led') {
+                    componentsHtml += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            330Ω Resistor (1/4W, Metal Film)
+                            <span class="badge bg-secondary rounded-pill">1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Red LED (5mm, 2V forward voltage)
+                            <span class="badge bg-danger rounded-pill">1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Breadboard
+                            <span class="badge bg-success rounded-pill">1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Jumper Wires
+                            <span class="badge bg-warning rounded-pill">3</span>
+                        </li>
+                    `;
+                } else if (circuitType === 'motor') {
+                    componentsHtml += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            L298N Motor Driver
+                            <span class="badge bg-info rounded-pill">1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            DC Motor (6V)
+                            <span class="badge bg-dark rounded-pill">1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            10kΩ Potentiometer
+                            <span class="badge bg-secondary rounded-pill">1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Power Supply (9V)
+                            <span class="badge bg-warning rounded-pill">1</span>
+                        </li>
+                    `;
+                } else if (circuitType === 'sensor') {
+                    componentsHtml += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Analog Sensor (Temperature/Light)
+                            <span class="badge bg-info rounded-pill">1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            10kΩ Pull-up Resistor
+                            <span class="badge bg-secondary rounded-pill">1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            330Ω LED Resistor
+                            <span class="badge bg-secondary rounded-pill">1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Status LED
+                            <span class="badge bg-danger rounded-pill">1</span>
+                        </li>
+                    `;
+                } else {
+                    componentsHtml += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            220Ω Resistor (1/4W)
+                            <span class="badge bg-secondary rounded-pill">1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Red LED (5mm)
+                            <span class="badge bg-danger rounded-pill">1</span>
+                        </li>
+                    `;
+                }
             }
             
             componentsHtml += '</ul>';
@@ -570,23 +685,43 @@
 
         function displaySchematic(schematicData) {
             const schematicDisplay = document.getElementById('schematicDisplay');
+            const circuitType = currentResults.circuit_type || 'led';
             
-            if (schematicData.svg_file) {
+            if (schematicData && schematicData.svg_file) {
                 // If we have an SVG file, display it
+                const svgFile = schematicData.svg_file;
                 schematicDisplay.innerHTML = `
                     <h6>Circuit Schematic</h6>
                     <div class="text-center">
-                        <embed src="/view/led_circuit.svg" type="image/svg+xml" width="100%" height="300">
+                        <embed src="/view/${svgFile}" type="image/svg+xml" width="100%" height="300">
                     </div>
                 `;
             } else {
-                // Fallback to text description
+                // Circuit-type specific fallback descriptions
+                let description = "Circuit schematic with components connected to Arduino.";
+                let svgPath = "led_circuit.svg";
+                
+                if (circuitType === 'led') {
+                    description = "LED circuit with current limiting resistor connected to Arduino pin D13.";
+                    svgPath = "led_circuit.svg";
+                } else if (circuitType === 'motor') {
+                    description = "Motor control circuit with L298N driver connected to Arduino PWM pins.";
+                    svgPath = "motor_circuit.svg";
+                } else if (circuitType === 'sensor') {
+                    description = "Sensor interface circuit with analog input and status LED connected to Arduino.";
+                    svgPath = "sensor_circuit.svg";
+                }
+                
                 schematicDisplay.innerHTML = `
-                    <h6>Circuit Description</h6>
-                    <p>LED circuit with current limiting resistor connected to Arduino pin D13.</p>
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i>
-                        Schematic files have been generated and are available for download.
+                    <h6>Circuit Schematic</h6>
+                    <div class="text-center">
+                        <embed src="/view/${svgPath}" type="image/svg+xml" width="100%" height="300" 
+                               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display: none;" class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <p>${description}</p>
+                            <p>Schematic files have been generated and are available for download.</p>
+                        </div>
                     </div>
                 `;
             }
@@ -596,8 +731,8 @@
             const simulationPlots = document.getElementById('simulationPlots');
             const simulationData = document.getElementById('simulationData');
             
+            // Display plots if available
             if (data.plot_data) {
-                // Display plot
                 simulationPlots.innerHTML = '<div id="plotDiv" class="plot-container"></div>';
                 
                 // Create plot from base64 data
@@ -606,34 +741,131 @@
                 img.style.width = '100%';
                 img.style.height = 'auto';
                 document.getElementById('plotDiv').appendChild(img);
+            } else {
+                simulationPlots.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-chart-line"></i>
+                        Simulation plots will be displayed here when available. Phase 2.1 supports AC analysis, Bode plots, noise analysis, and Monte Carlo simulations.
+                    </div>
+                `;
             }
             
+            // Display simulation data
             if (data.simulation || data.results) {
                 const simData = data.simulation || data.results;
+                const isPhase21 = data.phase_2_1_enabled;
+                
+                let analysisCards = '';
+                
+                // DC Analysis Card
+                analysisCards += `
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-battery-half"></i> DC Analysis
+                                </h6>
+                                <p class="card-text">
+                                    Analysis Type: ${simData.analysis_type || 'DC Operating Point'}<br>
+                                    Status: <span class="${simData.success ? 'text-success' : 'text-danger'}">${simData.success ? 'Success' : 'Failed'}</span><br>
+                                    Circuit Type: ${simData.circuit_type || 'Unknown'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Performance Card
+                analysisCards += `
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-tachometer-alt"></i> Performance
+                                </h6>
+                                <p class="card-text">
+                                    Circuit validated and ready for implementation.<br>
+                                    ${isPhase21 ? 'Advanced Phase 2.1 analysis completed.' : 'Basic analysis completed.'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Phase 2.1 specific analysis cards
+                if (isPhase21) {
+                    analysisCards += `
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-wave-square"></i> AC Analysis
+                                    </h6>
+                                    <p class="card-text">
+                                        Frequency response analysis<br>
+                                        Bode plots for magnitude and phase<br>
+                                        <small class="text-muted">Phase 2.1 Feature</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-volume-down"></i> Noise Analysis
+                                    </h6>
+                                    <p class="card-text">
+                                        Input-referred noise density<br>
+                                        SNR across frequency range<br>
+                                        <small class="text-muted">Phase 2.1 Feature</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-dice"></i> Monte Carlo
+                                    </h6>
+                                    <p class="card-text">
+                                        Component tolerance analysis<br>
+                                        Statistical performance distribution<br>
+                                        <small class="text-muted">Phase 2.1 Feature</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-danger">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-thermometer-half"></i> Temperature
+                                    </h6>
+                                    <p class="card-text">
+                                        Performance across temperature range<br>
+                                        -40°C to +85°C analysis<br>
+                                        <small class="text-muted">Phase 2.1 Feature</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
                 simulationData.innerHTML = `
-                    <h6>Simulation Data</h6>
+                    <h6>Simulation Results</h6>
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h6 class="card-title">DC Analysis</h6>
-                                    <p class="card-text">
-                                        Analysis Type: ${simData.analysis_type || 'DC Operating Point'}<br>
-                                        Status: ${simData.success ? 'Success' : 'Failed'}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h6 class="card-title">Performance</h6>
-                                    <p class="card-text">
-                                        Circuit validated and ready for implementation.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        ${analysisCards}
+                    </div>
+                `;
+            } else {
+                simulationData.innerHTML = `
+                    <h6>Simulation Results</h6>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        No simulation data available. The circuit design was completed but simulation results were not generated.
                     </div>
                 `;
             }
@@ -641,16 +873,21 @@
 
         function displayArduinoCode(crewResult) {
             const codeDisplay = document.getElementById('arduinoCode');
+            const circuitType = currentResults.circuit_type || 'led';
             
-            // Extract code from crew result
-            let code = `
-// Arduino LED Blinker Code
+            // Default circuit-type specific code
+            let code = '';
+            
+            if (circuitType === 'led') {
+                code = `// Arduino LED Control Code
 // Generated by Circuit AI
 
 #define LED_PIN 13
 
 void setup() {
   pinMode(LED_PIN, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("LED Circuit Ready");
 }
 
 void loop() {
@@ -658,10 +895,97 @@ void loop() {
   delay(1000);                  // Wait 1 second
   digitalWrite(LED_PIN, LOW);   // Turn LED off
   delay(1000);                  // Wait 1 second
+}`;
+            } else if (circuitType === 'motor') {
+                code = `// Arduino Motor Control Code
+// Generated by Circuit AI
+
+#define MOTOR_PIN1 9
+#define MOTOR_PIN2 10
+#define SPEED_PIN 6
+
+void setup() {
+  pinMode(MOTOR_PIN1, OUTPUT);
+  pinMode(MOTOR_PIN2, OUTPUT);
+  pinMode(SPEED_PIN, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("Motor Control Ready");
 }
-            `;
+
+void loop() {
+  // Forward direction
+  digitalWrite(MOTOR_PIN1, HIGH);
+  digitalWrite(MOTOR_PIN2, LOW);
+  analogWrite(SPEED_PIN, 150);  // 60% speed
+  delay(2000);
+  
+  // Stop
+  analogWrite(SPEED_PIN, 0);
+  delay(1000);
+  
+  // Reverse direction
+  digitalWrite(MOTOR_PIN1, LOW);
+  digitalWrite(MOTOR_PIN2, HIGH);
+  analogWrite(SPEED_PIN, 100);  // 40% speed
+  delay(2000);
+  
+  // Stop
+  analogWrite(SPEED_PIN, 0);
+  delay(1000);
+}`;
+            } else if (circuitType === 'sensor') {
+                code = `// Arduino Sensor Reading Code
+// Generated by Circuit AI
+
+#define SENSOR_PIN A0
+#define LED_PIN 13
+#define THRESHOLD 512
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("Sensor Circuit Ready");
+}
+
+void loop() {
+  int sensorValue = analogRead(SENSOR_PIN);
+  float voltage = sensorValue * (5.0 / 1023.0);
+  
+  Serial.print("Sensor Value: ");
+  Serial.print(sensorValue);
+  Serial.print(" | Voltage: ");
+  Serial.println(voltage);
+  
+  // Turn on LED if sensor value exceeds threshold
+  if (sensorValue > THRESHOLD) {
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
+  
+  delay(500);
+}`;
+            } else {
+                code = `// Arduino Custom Circuit Code
+// Generated by Circuit AI
+
+#define OUTPUT_PIN 13
+
+void setup() {
+  pinMode(OUTPUT_PIN, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("Custom Circuit Ready");
+}
+
+void loop() {
+  digitalWrite(OUTPUT_PIN, HIGH);
+  delay(1000);
+  digitalWrite(OUTPUT_PIN, LOW);
+  delay(1000);
+}`;
+            }
             
-            // Try to extract Arduino code from CrewAI result
+            // Try to extract Arduino code from CrewAI result if available
             if (crewResult && typeof crewResult === 'string') {
                 // Look for code blocks in the crew result
                 const codeBlockRegex = /```(?:cpp|c\+\+|arduino)?\s*([\s\S]*?)```/gi;
@@ -669,21 +993,30 @@ void loop() {
                 
                 if (matches && matches.length > 0) {
                     // Use the first code block found
-                    code = matches[0].replace(/```(?:cpp|c\+\+|arduino)?\s*/, '').replace(/```$/, '').trim();
+                    const extractedCode = matches[0].replace(/```(?:cpp|c\+\+|arduino)?\s*/, '').replace(/```$/, '').trim();
+                    if (extractedCode.length > 50) { // Only use if it's substantial code
+                        code = extractedCode;
+                    }
                 } else {
                     // Look for code between specific markers
                     const markerRegex = /\/\/ main_code\.ino([\s\S]*?)\/\/----------------------------------------------------------------------------------------------------------------------/gi;
                     const markerMatch = crewResult.match(markerRegex);
                     
                     if (markerMatch && markerMatch.length > 0) {
-                        code = markerMatch[0].replace(/\/\/ main_code\.ino\s*/, '').replace(/\/\/----------------------------------------------------------------------------------------------------------------------.*$/, '').trim();
+                        const extractedCode = markerMatch[0].replace(/\/\/ main_code\.ino\s*/, '').replace(/\/\/----------------------------------------------------------------------------------------------------------------------.*$/, '').trim();
+                        if (extractedCode.length > 50) {
+                            code = extractedCode;
+                        }
                     } else {
                         // Look for any Arduino-style code patterns
                         const arduinoRegex = /(#define.*?[\s\S]*?void\s+setup\s*\(\s*\)\s*\{[\s\S]*?\}[\s\S]*?void\s+loop\s*\(\s*\)\s*\{[\s\S]*?\})/gi;
                         const arduinoMatch = crewResult.match(arduinoRegex);
                         
                         if (arduinoMatch && arduinoMatch.length > 0) {
-                            code = arduinoMatch[0].trim();
+                            const extractedCode = arduinoMatch[0].trim();
+                            if (extractedCode.length > 50) {
+                                code = extractedCode;
+                            }
                         }
                     }
                 }
