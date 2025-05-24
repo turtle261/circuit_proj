@@ -19,7 +19,7 @@ research_task:
 
 design_task:
   description: >
-    Based on the research specifications: {research_output}, create a complete circuit design:
+    Based on the research specifications from the previous task, create a complete circuit design:
     1. Generate a schematic with proper component placement
     2. Create electrical connections following best practices
     3. Ensure proper power distribution and grounding
@@ -38,8 +38,8 @@ design_task:
 component_selection_task:
   description: >
     Select optimal components for the circuit design based on:
-    1. Technical requirements from research: {research_output}
-    2. Circuit specifications from design: {design_output}
+    1. Technical requirements from the research task
+    2. Circuit specifications from the design task
     3. Component database with performance history
     4. Cost and availability considerations
     
@@ -54,7 +54,7 @@ component_selection_task:
 
 simulation_task:
   description: >
-    Perform comprehensive circuit simulation using the netlist: {design_output} and components: {component_output}:
+    Perform comprehensive circuit simulation using the netlist and components from previous tasks:
     1. DC operating point analysis
     2. Transient analysis for time-dependent behavior
     3. Validation of voltage and current levels
@@ -74,9 +74,9 @@ simulation_task:
 code_generation_task:
   description: >
     Generate Arduino code based on:
-    1. Circuit design: {design_output}
-    2. Component specifications: {component_output}
-    3. User requirements: {research_output}
+    1. Circuit design from the design task
+    2. Component specifications from the component selection task
+    3. User requirements from the research task
     4. Pin assignments from the schematic
     
     Create clean, well-commented code that properly interfaces with the hardware.
@@ -90,12 +90,12 @@ code_generation_task:
 
 documentation_task:
   description: >
-    Create comprehensive project documentation using outputs from all agents:
-    1. Research specifications: {research_output}
-    2. Circuit design: {design_output}
-    3. Component selection: {component_output}
-    4. Simulation results: {simulation_output}
-    5. Arduino code: {code_output}
+    Create comprehensive project documentation using outputs from all previous tasks:
+    1. Research specifications from the research task
+    2. Circuit design from the design task
+    3. Component selection from the component selection task
+    4. Simulation results from the simulation task
+    5. Arduino code from the code generation task
     
     Compile into a user-friendly project guide.
   expected_output: >

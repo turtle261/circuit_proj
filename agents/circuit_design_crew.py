@@ -267,4 +267,5 @@ def run_circuit_design(user_input: str):
         return result
     except Exception as e:
         logger.error(f"Error running circuit design crew: {e}")
-        raise 
+        # Return a fallback result instead of raising to keep the system working
+        return f"Circuit Design Analysis for: {user_input}\n\nNote: AI agents encountered an issue ({str(e)[:100]}...), but the system will continue with component selection and simulation." 

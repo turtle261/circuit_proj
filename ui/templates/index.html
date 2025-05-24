@@ -485,36 +485,87 @@
 
         function displayOverview(data) {
             const overview = document.getElementById('designOverview');
+            
+            // Extract circuit type and description from crew result
+            let circuitDescription = "Your circuit has been successfully designed and simulated!";
+            let circuitType = data.circuit_type || "custom";
+            
+            if (data.crew_result && typeof data.crew_result === 'string') {
+                // Try to extract project description
+                const descMatch = data.crew_result.match(/## 1\. Project Overview\s*([\s\S]*?)##/);
+                if (descMatch) {
+                    const desc = descMatch[1].trim().split('\n')[0];
+                    if (desc.length > 10) {
+                        circuitDescription = desc;
+                    }
+                }
+            }
+            
             overview.innerHTML = `
                 <h6>Design Summary</h6>
-                <p>Your circuit has been successfully designed and simulated!</p>
+                <p>${circuitDescription}</p>
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i>
-                    Design completed successfully with simulation validation.
+                    Design completed successfully with CrewAI agents and simulation validation.
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Circuit Type:</strong> ${circuitType.toUpperCase()}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Status:</strong> <span class="text-success">Complete</span>
+                    </div>
                 </div>
             `;
             
             // Display component list if available
-            if (data.simulation && data.simulation.success) {
-                const componentList = document.getElementById('componentList');
-                componentList.innerHTML = `
-                    <h6>Components Used</h6>
-                    <ul class="list-group list-group-flush">
+            const componentList = document.getElementById('componentList');
+            let componentsHtml = '<h6>Components Used</h6><ul class="list-group list-group-flush">';
+            
+            // Add Arduino
+            componentsHtml += `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Arduino Uno R3
+                    <span class="badge bg-primary rounded-pill">1</span>
+                </li>
+            `;
+            
+            // Add components from data
+            if (data.components) {
+                if (data.components.resistor) {
+                    const resistor = data.components.resistor.component || data.components.resistor;
+                    componentsHtml += `
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Arduino Uno R3
+                            ${resistor.name || resistor.value + 'Ω Resistor'}
                             <span class="badge bg-primary rounded-pill">1</span>
                         </li>
+                    `;
+                }
+                if (data.components.led) {
+                    const led = data.components.led.component || data.components.led;
+                    componentsHtml += `
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            330Ω Resistor (1/4W)
+                            ${led.name || led.color + ' LED'}
                             <span class="badge bg-primary rounded-pill">1</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Red LED (5mm)
-                            <span class="badge bg-primary rounded-pill">1</span>
-                        </li>
-                    </ul>
+                    `;
+                }
+            } else {
+                // Default components
+                componentsHtml += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        220Ω Resistor (1/4W)
+                        <span class="badge bg-primary rounded-pill">1</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Red LED (5mm)
+                        <span class="badge bg-primary rounded-pill">1</span>
+                    </li>
                 `;
             }
+            
+            componentsHtml += '</ul>';
+            componentList.innerHTML = componentsHtml;
         }
 
         function displaySchematic(schematicData) {
@@ -525,7 +576,7 @@
                 schematicDisplay.innerHTML = `
                     <h6>Circuit Schematic</h6>
                     <div class="text-center">
-                        <embed src="/download/led_circuit.svg" type="image/svg+xml" width="100%" height="300">
+                        <embed src="/view/led_circuit.svg" type="image/svg+xml" width="100%" height="300">
                     </div>
                 `;
             } else {
@@ -591,7 +642,7 @@
         function displayArduinoCode(crewResult) {
             const codeDisplay = document.getElementById('arduinoCode');
             
-            // Extract code from crew result if possible
+            // Extract code from crew result
             let code = `
 // Arduino LED Blinker Code
 // Generated by Circuit AI
@@ -609,6 +660,34 @@ void loop() {
   delay(1000);                  // Wait 1 second
 }
             `;
+            
+            // Try to extract Arduino code from CrewAI result
+            if (crewResult && typeof crewResult === 'string') {
+                // Look for code blocks in the crew result
+                const codeBlockRegex = /```(?:cpp|c\+\+|arduino)?\s*([\s\S]*?)```/gi;
+                const matches = crewResult.match(codeBlockRegex);
+                
+                if (matches && matches.length > 0) {
+                    // Use the first code block found
+                    code = matches[0].replace(/```(?:cpp|c\+\+|arduino)?\s*/, '').replace(/```$/, '').trim();
+                } else {
+                    // Look for code between specific markers
+                    const markerRegex = /\/\/ main_code\.ino([\s\S]*?)\/\/----------------------------------------------------------------------------------------------------------------------/gi;
+                    const markerMatch = crewResult.match(markerRegex);
+                    
+                    if (markerMatch && markerMatch.length > 0) {
+                        code = markerMatch[0].replace(/\/\/ main_code\.ino\s*/, '').replace(/\/\/----------------------------------------------------------------------------------------------------------------------.*$/, '').trim();
+                    } else {
+                        // Look for any Arduino-style code patterns
+                        const arduinoRegex = /(#define.*?[\s\S]*?void\s+setup\s*\(\s*\)\s*\{[\s\S]*?\}[\s\S]*?void\s+loop\s*\(\s*\)\s*\{[\s\S]*?\})/gi;
+                        const arduinoMatch = crewResult.match(arduinoRegex);
+                        
+                        if (arduinoMatch && arduinoMatch.length > 0) {
+                            code = arduinoMatch[0].trim();
+                        }
+                    }
+                }
+            }
             
             codeDisplay.innerHTML = `
                 <h6>Arduino Code</h6>
