@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 import os
 import sys
 import logging
@@ -31,7 +34,8 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'circuit-ai-secret-key')
 
 # Initialize SocketIO with CORS support and explicit transports
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet', 
-                   transports=['polling', 'websocket'], allow_upgrades=True)
+                   transports=['websocket', 'polling'], allow_upgrades=True,
+                   logger=True, engineio_logger=True)
 
 # Initialize database
 try:
@@ -56,10 +60,8 @@ def design_circuit():
         if not user_input:
             return jsonify({'status': 'error', 'message': 'No circuit description provided'})
         
-        # Start design process in background thread
-        thread = threading.Thread(target=run_design_process, args=(user_input,))
-        thread.daemon = True
-        thread.start()
+        # Start design process in background using eventlet
+        eventlet.spawn(run_design_process, user_input)
         
         return jsonify({
             'status': 'success', 
@@ -82,8 +84,11 @@ def emit_progress(stage, message, progress, detail=None):
         data['detail'] = detail
     
     try:
-        socketio.emit('design_progress', data)
+        # Use socketio.emit with namespace for thread safety
+        socketio.emit('design_progress', data, namespace='/')
         logger.info(f"Progress emitted: {stage} - {message} ({progress}%)")
+        # Small delay to ensure message is processed
+        eventlet.sleep(0.1)
     except Exception as e:
         logger.warning(f"Failed to emit progress: {e}")
         print(f"Progress: {stage} - {message} ({progress}%)")
@@ -96,21 +101,21 @@ def run_design_process(user_input: str):
         # Stage 1: Research and Analysis
         emit_progress('research', 'Starting requirements analysis...', 5, 'Initializing AI agents')
         
-        time.sleep(1)
+        eventlet.sleep(1)
         emit_progress('research', 'Analyzing circuit requirements...', 10, 'Processing natural language input')
         
-        time.sleep(2)
+        eventlet.sleep(2)
         emit_progress('research', 'Researching component specifications...', 15, 'Consulting component database')
         
         # Stage 2: Design Phase
-        time.sleep(2)
+        eventlet.sleep(2)
         emit_progress('design', 'Starting circuit design...', 20, 'Activating design agent')
         
-        time.sleep(1)
+        eventlet.sleep(1)
         emit_progress('design', 'Calculating component values...', 25, 'Using Thompson Sampling for optimization')
         
         # Component selection
-        time.sleep(2)
+        eventlet.sleep(2)
         emit_progress('design', 'Selecting optimal components...', 35, 'Running component selection algorithms')
         
         # Run actual component selection
@@ -118,18 +123,18 @@ def run_design_process(user_input: str):
             resistor_selection = component_selector.select_resistor_for_led(5.0, 2.0, 0.02)
             led_selection = component_selector.select_led('red')
         
-        time.sleep(1)
+        eventlet.sleep(1)
         emit_progress('design', 'Optimizing circuit topology...', 45, 'Validating electrical connections')
         
         # Run the CrewAI design process (simplified for demo)
-        time.sleep(2)
+        eventlet.sleep(2)
         emit_progress('design', 'Generating Arduino code...', 50, 'Code generation agent active')
         
         # Stage 3: Simulation
-        time.sleep(1)
+        eventlet.sleep(1)
         emit_progress('simulation', 'Initializing SPICE simulator...', 55, 'Loading NGSpice engine')
         
-        time.sleep(2)
+        eventlet.sleep(2)
         emit_progress('simulation', 'Running DC analysis...', 65, 'Calculating operating point')
         
         # Run simulation if we have circuit data
@@ -142,11 +147,11 @@ def run_design_process(user_input: str):
                 simulation_results = simulator.run_dc_analysis(circuit)
                 plot_data = simulator.generate_plot(simulation_results) if simulation_results else None
         
-        time.sleep(1)
+        eventlet.sleep(1)
         emit_progress('simulation', 'Running transient analysis...', 70, 'Simulating time-domain behavior')
         
         # Stage 4: Schematic Generation
-        time.sleep(2)
+        eventlet.sleep(2)
         emit_progress('schematic', 'Generating schematic diagram...', 80, 'Using KiCad integration')
         
         # Generate schematic
@@ -155,11 +160,11 @@ def run_design_process(user_input: str):
             components = {'resistor_value': 330, 'led_color': 'red'}
             schematic_results = kicad_generator.create_led_schematic(components, './output')
         
-        time.sleep(1)
+        eventlet.sleep(1)
         emit_progress('schematic', 'Creating netlist and documentation...', 90, 'Generating downloadable files')
         
         # Stage 5: Completion
-        time.sleep(1)
+        eventlet.sleep(1)
         emit_progress('complete', 'Design complete!', 100, 'All files generated successfully')
         
         # Generate mock CrewAI result for demo
@@ -209,7 +214,7 @@ Files Generated:
                     'resistor': resistor_selection if 'resistor_selection' in locals() else None,
                     'led': led_selection if 'led_selection' in locals() else None
                 }
-            })
+            }, namespace='/')
             logger.info("Design complete event emitted successfully")
         except Exception as e:
             logger.warning(f"Failed to emit design_complete: {e}")
@@ -221,7 +226,7 @@ Files Generated:
             socketio.emit('design_error', {
                 'error': str(e),
                 'message': 'Design process encountered an error'
-            })
+            }, namespace='/')
         except Exception as emit_error:
             logger.warning(f"Failed to emit error: {emit_error}")
             print(f"Design process failed: {e}")
