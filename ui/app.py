@@ -692,8 +692,9 @@ def run_design_process(user_input: str):
                 }
                 
                 # Generate PCB layout
+                logger.info(f"PCB layout input - circuit_data type: {type(circuit_data)}, content: {circuit_data}")
                 pcb_layout_result = pcb_tool._run(
-                    circuit_data=json.dumps(circuit_data),
+                    circuit_data=circuit_data,
                     project_name=f"{circuit_type}_circuit",
                     board_size="80x60",
                     layer_count=2

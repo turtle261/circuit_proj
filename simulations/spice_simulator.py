@@ -27,6 +27,7 @@ try:
     PYSPICE_AVAILABLE = True
 except ImportError:
     PYSPICE_AVAILABLE = False
+    Circuit = None  # Define Circuit as None when PySpice is not available
     logging.warning("PySpice not available. Simulation features will be limited.")
 
 logger = logging.getLogger(__name__)
@@ -123,7 +124,7 @@ class SpiceSimulator:
         logger.info(f"Updated simulation parameters: AC freq range {params.start_frequency}-{params.stop_frequency} Hz")
     
     def create_led_circuit(self, led_voltage: float = 2.0, supply_voltage: float = 5.0, 
-                          current_limit: float = 0.02) -> Optional[Circuit]:
+                          current_limit: float = 0.02) -> Optional[Any]:
         """Create a simple LED circuit with current limiting resistor."""
         if not PYSPICE_AVAILABLE:
             logger.error("PySpice not available")
@@ -152,7 +153,7 @@ class SpiceSimulator:
             logger.error(f"Failed to create LED circuit: {e}")
             return None
     
-    def create_blinker_circuit(self, led_voltage: float = 2.0, supply_voltage: float = 5.0) -> Optional[Circuit]:
+    def create_blinker_circuit(self, led_voltage: float = 2.0, supply_voltage: float = 5.0) -> Optional[Any]:
         """Create a simple LED blinker circuit with 555 timer."""
         if not PYSPICE_AVAILABLE:
             logger.error("PySpice not available")
@@ -187,7 +188,7 @@ class SpiceSimulator:
             return None
     
     def create_opamp_inverting_amplifier(self, gain: float = -10, input_impedance: float = 10000,
-                                       supply_voltage: float = 15) -> Optional[Circuit]:
+                                       supply_voltage: float = 15) -> Optional[Any]:
         """Create an inverting operational amplifier circuit."""
         if not PYSPICE_AVAILABLE:
             logger.error("PySpice not available")
@@ -228,7 +229,7 @@ class SpiceSimulator:
             return None
     
     def create_opamp_non_inverting_amplifier(self, gain: float = 10, input_impedance: float = 1e6,
-                                           supply_voltage: float = 15) -> Optional[Circuit]:
+                                           supply_voltage: float = 15) -> Optional[Any]:
         """Create a non-inverting operational amplifier circuit."""
         if not PYSPICE_AVAILABLE:
             logger.error("PySpice not available")
@@ -269,7 +270,7 @@ class SpiceSimulator:
             return None
     
     def create_active_lowpass_filter(self, cutoff_frequency: float = 1000, gain: float = 1,
-                                   q_factor: float = 0.707, supply_voltage: float = 15) -> Optional[Circuit]:
+                                   q_factor: float = 0.707, supply_voltage: float = 15) -> Optional[Any]:
         """Create a Sallen-Key active low-pass filter."""
         if not PYSPICE_AVAILABLE:
             logger.error("PySpice not available")
@@ -319,7 +320,7 @@ class SpiceSimulator:
             return None
     
     def create_active_highpass_filter(self, cutoff_frequency: float = 1000, gain: float = 1,
-                                    q_factor: float = 0.707, supply_voltage: float = 15) -> Optional[Circuit]:
+                                    q_factor: float = 0.707, supply_voltage: float = 15) -> Optional[Any]:
         """Create a Sallen-Key active high-pass filter."""
         if not PYSPICE_AVAILABLE:
             logger.error("PySpice not available")
@@ -368,7 +369,7 @@ class SpiceSimulator:
             return None
     
     def create_wien_bridge_oscillator(self, frequency: float = 1000, amplitude: float = 1,
-                                    supply_voltage: float = 15) -> Optional[Circuit]:
+                                    supply_voltage: float = 15) -> Optional[Any]:
         """Create a Wien bridge oscillator circuit."""
         if not PYSPICE_AVAILABLE:
             logger.error("PySpice not available")

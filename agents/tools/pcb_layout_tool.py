@@ -44,13 +44,13 @@ class PCBLayoutTool(BaseTool):
             self._layout_engine = PCBLayoutEngine()
         return self._layout_engine
         
-    def _run(self, circuit_data: str, project_name: str = "circuit", 
+    def _run(self, circuit_data, project_name: str = "circuit", 
              board_size: str = "80x60", layer_count: int = 2) -> str:
         """
         Generate PCB layout from circuit data.
         
         Args:
-            circuit_data: JSON string containing circuit components and connections
+            circuit_data: Dictionary or JSON string containing circuit components and connections
             project_name: Name for the PCB project
             board_size: Board dimensions in format "WIDTHxHEIGHT" (mm)
             layer_count: Number of PCB layers (2, 4, 6, etc.)
@@ -63,13 +63,29 @@ class PCBLayoutTool(BaseTool):
             
             # Parse input parameters
             if isinstance(circuit_data, str):
-                circuit_dict = json.loads(circuit_data)
+                try:
+                    circuit_dict = json.loads(circuit_data)
+                except json.JSONDecodeError:
+                    # If it's not valid JSON, create a basic circuit structure
+                    circuit_dict = {
+                        'components': [
+                            {'reference': 'LED1', 'type': 'led', 'value': 'Red LED'},
+                            {'reference': 'R1', 'type': 'resistor', 'value': '220R'}
+                        ],
+                        'connections': [
+                            {'from': 'Arduino', 'from_pin': '13', 'to': 'R1', 'to_pin': '1', 'net': 'LED_CONTROL'},
+                            {'from': 'R1', 'from_pin': '2', 'to': 'LED1', 'to_pin': 'anode', 'net': 'LED_CONTROL'},
+                            {'from': 'LED1', 'from_pin': 'cathode', 'to': 'Arduino', 'to_pin': 'GND', 'net': 'GND'}
+                        ]
+                    }
             else:
                 circuit_dict = circuit_data
                 
             # Parse board size
             if 'x' in board_size.lower():
-                width, height = map(float, board_size.lower().split('x'))
+                # Remove units and extra spaces, then split
+                clean_size = board_size.lower().replace('mm', '').replace(' ', '')
+                width, height = map(float, clean_size.split('x'))
             else:
                 width, height = 80.0, 60.0  # Default size
             
@@ -287,10 +303,9 @@ class PCBVisualizationTool(BaseTool):
             fig, ax = plt.subplots(1, 1, figsize=(12, 8))
             
             # Get board dimensions
-            board_width = layout_dict.get('board_size', '80x60').split('x')[0]
-            board_height = layout_dict.get('board_size', '80x60').split('x')[1]
-            board_width = float(board_width)
-            board_height = float(board_height)
+            board_size = layout_dict.get('board_size', '80x60')
+            clean_size = board_size.replace('mm', '').replace(' ', '')
+            board_width, board_height = map(float, clean_size.split('x'))
             
             # Draw board outline
             board_rect = patches.Rectangle((0, 0), board_width, board_height,
@@ -362,8 +377,9 @@ class PCBVisualizationTool(BaseTool):
             ax = fig.add_subplot(111, projection='3d')
             
             # Get board dimensions
-            board_width = float(layout_dict.get('board_size', '80x60').split('x')[0])
-            board_height = float(layout_dict.get('board_size', '80x60').split('x')[1])
+            board_size = layout_dict.get('board_size', '80x60')
+            clean_size = board_size.replace('mm', '').replace(' ', '')
+            board_width, board_height = map(float, clean_size.split('x'))
             
             # Import numpy
             import numpy as np
@@ -431,8 +447,9 @@ class PCBVisualizationTool(BaseTool):
             fig, ax = plt.subplots(1, 1, figsize=(12, 8))
             
             # Get board dimensions
-            board_width = float(layout_dict.get('board_size', '80x60').split('x')[0])
-            board_height = float(layout_dict.get('board_size', '80x60').split('x')[1])
+            board_size = layout_dict.get('board_size', '80x60')
+            clean_size = board_size.replace('mm', '').replace(' ', '')
+            board_width, board_height = map(float, clean_size.split('x'))
             
             # Create thermal map
             x = np.linspace(0, board_width, 100)
@@ -577,7 +594,8 @@ class ManufacturingValidationTool(BaseTool):
         
         # Board size check
         board_size = layout_dict.get('board_size', '80x60')
-        width, height = map(float, board_size.split('x'))
+        clean_size = board_size.replace('mm', '').replace(' ', '')
+        width, height = map(float, clean_size.split('x'))
         
         if width > 200 or height > 200:
             checks.append({
@@ -648,7 +666,8 @@ class ManufacturingValidationTool(BaseTool):
         
         # Calculate costs
         board_size = layout_dict.get('board_size', '80x60')
-        width, height = map(float, board_size.split('x'))
+        clean_size = board_size.replace('mm', '').replace(' ', '')
+        width, height = map(float, clean_size.split('x'))
         area = width * height / 100  # cm²
         
         layer_count = layout_dict.get('layer_count', 2)

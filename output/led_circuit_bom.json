@@ -1,0 +1,51 @@
+{
+  "components": [
+    {
+      "group_id": "resistor",
+      "references": [
+        "RESISTOR1"
+      ],
+      "quantity": 1,
+      "component_type": "resistor",
+      "description": "0603 Resistor, 1% tolerance",
+      "manufacturer": "Yageo",
+      "part_number": "RC0603FR-07220RL",
+      "unit_cost": 0.02,
+      "total_cost": 0.02,
+      "availability": "In Stock",
+      "lead_time": "1-2 weeks",
+      "supplier": "DigiKey"
+    },
+    {
+      "group_id": "led",
+      "references": [
+        "LED1"
+      ],
+      "quantity": 1,
+      "component_type": "led",
+      "description": "0603 LED, Red, 2V",
+      "manufacturer": "Kingbright",
+      "part_number": "APT1608EC",
+      "unit_cost": 0.15,
+      "total_cost": 0.15,
+      "availability": "In Stock",
+      "lead_time": "1-2 weeks",
+      "supplier": "DigiKey"
+    }
+  ],
+  "total_cost": 0.16999999999999998,
+  "availability_status": "good",
+  "supplier_recommendations": [
+    {
+      "supplier": "LCSC",
+      "reason": "Cost-effective for low-value orders",
+      "estimated_savings": "15-25%"
+    },
+    {
+      "supplier": "Mouser",
+      "reason": "Good alternative source",
+      "estimated_savings": "Price matching available"
+    }
+  ],
+  "alternatives": []
+}

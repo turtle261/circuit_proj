@@ -1,0 +1,10 @@
+PCB ASSEMBLY DRAWING
+==================================================
+
+Board Size: 100.0 x 50.0 mm
+Layer Count: 2
+
+COMPONENT PLACEMENT:
+------------------------------
+LED1     | (  65.0,   25.0) |   0.0° | led
+R1       | (  15.1,   10.0) |   0.0° | resistor

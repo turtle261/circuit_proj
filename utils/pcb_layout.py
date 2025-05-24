@@ -926,8 +926,13 @@ class PCBLayoutEngine:
                           project_name: str = "circuit") -> Dict[str, Any]:
         """Generate complete PCB layout from circuit data."""
         logger.info(f"Starting PCB layout generation for {project_name}")
+        logger.info(f"PCB layout engine input - circuit_data type: {type(circuit_data)}, content: {circuit_data}")
         
         try:
+            # Validate input data
+            if not isinstance(circuit_data, dict):
+                raise ValueError(f"Expected dict for circuit_data, got {type(circuit_data)}")
+            
             # Parse circuit data and create PCB design
             pcb_design = self._parse_circuit_data(circuit_data)
             
@@ -1005,20 +1010,46 @@ class PCBLayoutEngine:
     
     def _parse_circuit_data(self, circuit_data: Dict[str, Any]) -> PCBDesign:
         """Parse circuit data into PCB design structure."""
+        logger.info(f"_parse_circuit_data called with type: {type(circuit_data)}")
         pcb_design = PCBDesign()
         
         # Set board constraints
+        logger.info(f"About to call circuit_data.get('constraints') on {type(circuit_data)}")
+        constraints_data = circuit_data.get('constraints', {})
         pcb_design.constraints = PCBConstraints(
-            board_width=80.0,  # mm
-            board_height=60.0,  # mm
-            layer_count=2,
-            min_trace_width=0.2,
-            min_via_size=0.3
+            board_width=constraints_data.get('board_width', 80.0),  # mm
+            board_height=constraints_data.get('board_height', 60.0),  # mm
+            layer_count=constraints_data.get('layer_count', 2),
+            min_trace_width=constraints_data.get('min_trace_width', 0.2),
+            min_via_size=constraints_data.get('min_via_size', 0.3)
         )
         
         # Parse components
         components_data = circuit_data.get('components', [])
+        logger.info(f"components_data type: {type(components_data)}, content: {components_data}")
+        
+        # Handle both list and dict formats for components
+        if isinstance(components_data, dict):
+            # Convert dict format to list format
+            component_list = []
+            for comp_type, comp_value in components_data.items():
+                if comp_value is not None:
+                    component_list.append({
+                        'type': comp_type,
+                        'value': comp_value,
+                        'reference': f'{comp_type.upper()}1'
+                    })
+                else:
+                    # Create default component entry
+                    component_list.append({
+                        'type': comp_type,
+                        'value': '220R' if comp_type == 'resistor' else 'Red LED',
+                        'reference': f'{comp_type.upper()}1'
+                    })
+            components_data = component_list
+            
         for i, comp_data in enumerate(components_data):
+            logger.info(f"Processing component {i}: type={type(comp_data)}, content={comp_data}")
             comp_type = self._determine_component_type(comp_data)
             thermal_power = self._estimate_thermal_power(comp_data)
             

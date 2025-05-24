@@ -35,13 +35,11 @@ class AdvancedSimulationTool(BaseTool):
     - Performance metrics calculation (gain, bandwidth, stability margins)
     - Advanced plotting and visualization
     
-    Input should be a JSON string with:
-    {
-        "circuit_type": "led|opamp_inverting|opamp_non_inverting|lowpass_filter|highpass_filter|wien_oscillator",
-        "parameters": {circuit-specific parameters},
-        "analysis_types": ["dc", "transient", "ac", "noise", "monte_carlo", "temperature"],
-        "simulation_params": {optional simulation parameters}
-    }
+    Input should be a simple JSON string like:
+    {"circuit_type": "led", "analysis_types": ["dc", "transient"]}
+    
+    Supported circuit types: led, opamp_inverting, opamp_non_inverting, lowpass_filter, highpass_filter, wien_oscillator
+    Supported analysis types: dc, transient, ac, noise, monte_carlo, temperature
     """
     
     def __init__(self, **kwargs):
@@ -57,8 +55,22 @@ class AdvancedSimulationTool(BaseTool):
     def _run(self, input_data: str) -> str:
         """Run advanced circuit simulation."""
         try:
-            # Parse input
-            data = json.loads(input_data)
+            # Parse input - handle both string and dict inputs
+            if isinstance(input_data, str):
+                try:
+                    data = json.loads(input_data)
+                except json.JSONDecodeError as e:
+                    logger.error(f"JSON parsing error: {e}")
+                    # Try to extract basic info for fallback
+                    data = {
+                        'circuit_type': 'led',
+                        'parameters': {},
+                        'analysis_types': ['dc', 'transient'],
+                        'simulation_params': {}
+                    }
+            else:
+                data = input_data
+                
             circuit_type = data.get('circuit_type', 'led')
             parameters = data.get('parameters', {})
             analysis_types = data.get('analysis_types', ['dc', 'transient'])

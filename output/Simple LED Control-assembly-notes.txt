@@ -1,0 +1,12 @@
+PCB ASSEMBLY NOTES
+==================================================
+
+GENERAL ASSEMBLY INSTRUCTIONS:
+1. Handle PCB with anti-static precautions
+2. Use appropriate soldering temperature profiles
+3. Inspect all solder joints after assembly
+4. Perform electrical testing before final assembly
+
+COMPONENT-SPECIFIC NOTES:
+- Microcontroller: Ensure proper orientation, use flux
+- LEDs: Check polarity before soldering

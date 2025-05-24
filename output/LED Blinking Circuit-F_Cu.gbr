@@ -1,5 +1,5 @@
 G04 #@! TF.GenerationSoftware,Circuit AI,PCB Layout Generator*
-G04 #@! TF.FileFunction,Edge.Cuts*
+G04 #@! TF.FileFunction,F.Cu*
 G04 #@! TF.SameCoordinates,Original*
 %FSLAX36Y36*%
 %MOMM*%
@@ -7,10 +7,6 @@ G04 #@! TF.SameCoordinates,Original*
 %ADD10C,0.200000*%
 %ADD11C,0.300000*%
 G04 Layer content*
-G01*
-X0Y0D02*
-X60000000Y0D01*
-X60000000Y40000000D01*
-X0Y40000000D01*
-X0Y0D01*
+X65000000Y25000000D03*
+X15079999Y10000000D03*
 M02*
