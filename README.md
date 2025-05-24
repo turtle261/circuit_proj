@@ -1,22 +1,33 @@
-# AI-Powered Circuit Design Assistant
+# Circuit Design Assistant
 
-An AI-powered tool for automating circuit design, component selection, simulation, and Arduino code generation.
+An AI-powered assistant for designing Arduino circuits and generating code. This tool uses a crew of specialized AI agents to help you design, simulate, and document electronic circuits.
 
-## Setup Instructions
+## Features
 
-1. Create a virtual environment:
+- Circuit design and analysis
+- Component selection and optimization
+- SPICE simulation
+- Arduino code generation
+- Comprehensive documentation
+- Performance tracking and feedback
+
+## Prerequisites
+
+- Python 3.8 or higher
+- Google Gemini API key
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/circuit_ai.git
+cd circuit_ai
+```
+
+2. Create a virtual environment and activate it:
 ```bash
 python -m venv venv
-```
-
-2. Activate the virtual environment:
-- Windows:
-```bash
-.\venv\Scripts\activate
-```
-- Unix/MacOS:
-```bash
-source venv/bin/activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
 3. Install dependencies:
@@ -24,22 +35,59 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. Additional Requirements:
-- KiCad (with Python scripting enabled)
-- NGSpice (for PySpice)
+4. Create a `.env` file in the project root with your Gemini API key:
+```
+GEMINI_API_KEY=your_api_key_here
+```
+
+## Usage
+
+1. Run the main script:
+```bash
+python main.py
+```
+
+2. Follow the prompts to describe the circuit you want to design.
+
+3. The assistant will:
+   - Analyze your requirements
+   - Design the circuit
+   - Select appropriate components
+   - Simulate the circuit
+   - Generate Arduino code
+   - Create documentation
 
 ## Project Structure
 
 ```
 circuit_ai/
-├── agents/           # AI agent implementations
-├── ui/              # Flask web interface
-├── database/        # Database models and migrations
-├── simulations/     # Circuit simulation code
-├── tests/           # Test files
-└── utils/           # Utility functions
+├── agents/
+│   ├── config/
+│   │   ├── agents.yaml
+│   │   └── tasks.yaml
+│   └── circuit_design_crew.py
+├── database/
+│   ├── models.py
+│   └── seed_data.py
+├── main.py
+├── requirements.txt
+└── README.md
 ```
 
-## Development Status
+## Contributing
 
-Currently in Phase 1: Core Infrastructure development. 
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- CrewAI for the agent orchestration framework
+- Google Gemini for the AI capabilities
+- SQLAlchemy for database management 

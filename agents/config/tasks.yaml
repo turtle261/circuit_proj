@@ -1,0 +1,109 @@
+research_task:
+  description: >
+    Analyze the user input: "{user_input}" and extract the following information:
+    1. Project type and main functionality required
+    2. List of required components (microcontroller, sensors, actuators, etc.)
+    3. Electrical specifications (voltage levels, current requirements, timing)
+    4. Interface requirements (digital/analog pins, communication protocols)
+    5. Any special considerations or constraints
+    
+    Provide a structured analysis that will guide the circuit design process.
+  expected_output: >
+    A detailed technical specification document in JSON format containing:
+    - project_type: string describing the project category
+    - components_needed: list of required component types with specifications
+    - electrical_specs: voltage, current, and power requirements
+    - pin_requirements: Arduino pin assignments and types needed
+    - special_requirements: any additional considerations
+  agent: research_agent
+
+design_task:
+  description: >
+    Based on the research specifications from the previous task, create a complete circuit design:
+    1. Generate a schematic with proper component placement
+    2. Create electrical connections following best practices
+    3. Ensure proper power distribution and grounding
+    4. Generate a netlist for simulation
+    5. Validate the design against electrical rules
+    
+    Use the component database to select appropriate parts and create a manufacturable design.
+  expected_output: >
+    A complete circuit design package containing:
+    - schematic_data: JSON representation of the circuit schematic
+    - netlist: SPICE-compatible netlist for simulation
+    - component_list: list of selected components with specifications
+    - design_notes: important design considerations and assumptions
+  agent: design_agent
+
+component_selection_task:
+  description: >
+    Select optimal components for the circuit design based on:
+    1. Technical requirements from the research task
+    2. Circuit specifications from the design task
+    3. Component database with performance history
+    4. Cost and availability considerations
+    
+    Use intelligent selection algorithms to balance performance, cost, and reliability.
+  expected_output: >
+    Optimized component selection containing:
+    - selected_components: list of specific components with part numbers
+    - selection_rationale: explanation of selection criteria and trade-offs
+    - alternatives: backup component options
+    - total_cost: estimated project cost
+  agent: component_selection_agent
+
+simulation_task:
+  description: >
+    Perform comprehensive circuit simulation using the netlist and components from previous tasks:
+    1. DC operating point analysis
+    2. Transient analysis for time-dependent behavior
+    3. Validation of voltage and current levels
+    4. Check for potential issues or violations
+    5. Generate performance metrics and plots
+    
+    Iterate with the design agent if issues are found.
+  expected_output: >
+    Complete simulation results containing:
+    - simulation_data: numerical results from all analyses
+    - performance_metrics: key performance indicators
+    - plots: voltage/current waveforms and other visualizations
+    - validation_status: pass/fail for design requirements
+    - recommendations: suggestions for improvements if needed
+  agent: simulation_agent
+
+code_generation_task:
+  description: >
+    Generate Arduino code based on:
+    1. Circuit design from the design task
+    2. Component specifications from the component selection task
+    3. User requirements from the research task
+    4. Pin assignments from the schematic
+    
+    Create clean, well-commented code that properly interfaces with the hardware.
+  expected_output: >
+    Complete Arduino code package containing:
+    - main_code: the primary .ino file with setup() and loop() functions
+    - pin_definitions: clear pin assignment definitions
+    - code_comments: detailed explanations of functionality
+    - usage_instructions: how to upload and use the code
+  agent: code_generation_agent
+
+documentation_task:
+  description: >
+    Create comprehensive project documentation using outputs from all previous tasks:
+    1. Research specifications from the research task
+    2. Circuit design from the design task
+    3. Component selection from the component selection task
+    4. Simulation results from the simulation task
+    5. Arduino code from the code generation task
+    
+    Compile into a user-friendly project guide.
+  expected_output: >
+    Complete project documentation containing:
+    - project_overview: summary of functionality and features
+    - bill_of_materials: detailed component list with suppliers
+    - assembly_instructions: step-by-step building guide
+    - code_explanation: detailed code walkthrough
+    - troubleshooting: common issues and solutions
+    - testing_procedures: how to verify the project works
+  agent: documentation_agent 

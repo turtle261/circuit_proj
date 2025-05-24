@@ -1,0 +1,10 @@
+{
+  "circuit_type": "motor",
+  "user_input": "Design a motor speed control circuit with potentiometer",
+  "crew_analysis": "```json\n{\n  \"project_documentation\": {\n    \"project_overview\": {\n      \"title\": \"Arduino Motor Speed Control Project\",\n      \"version\": \"1.0\",\n      \"date\": \"October 26, 2023\",\n      \"summary\": \"This project demonstrates how to control the speed of a DC motor using an Arduino Uno and an L298N motor driver. A potentiometer is used to vary the motor speed, and the L298N provides the necessary current amplification to drive the motor. The project includes a schematic, bill of materials, assembly instructions, code explanation, troubleshooting guide, and testing procedures.\",\n      \"features\": [\n        \"Variable motor speed control using a potentiometer.\",\n        \"L298N H-bridge motor driver for driving the DC motor.\",\n        \"Arduino Uno microcontroller for control logic.\",\n        \"Optional LED indicator for motor activity.\"\n      ]\n    },\n    \"bill_of_materials\": {\n      \"table\": [\n        {\n          \"component\": \"Arduino Uno\",\n          \"part_number\": \"Arduino Uno R3\",\n          \"q",
+  "generated_files": [
+    "motor_circuit.svg",
+    "motor_circuit.ino",
+    "motor_circuit.json"
+  ]
+}

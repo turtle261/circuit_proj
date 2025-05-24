@@ -1,0 +1,111 @@
+{
+  "version": "20230121",
+  "generator": "circuit_ai",
+  "uuid": "led-circuit-001",
+  "paper": "A4",
+  "title_block": {
+    "title": "LED Circuit",
+    "date": "",
+    "rev": "1",
+    "company": "Circuit AI"
+  },
+  "components": [
+    {
+      "type": "microcontroller",
+      "reference": "U1",
+      "value": "Arduino_Uno_R3",
+      "position": [
+        50,
+        50
+      ],
+      "pins": {
+        "D13": [
+          70,
+          50
+        ],
+        "GND": [
+          70,
+          60
+        ],
+        "5V": [
+          70,
+          40
+        ]
+      }
+    },
+    {
+      "type": "resistor",
+      "reference": "R1",
+      "value": "330\u03a9",
+      "position": [
+        100,
+        50
+      ],
+      "pins": {
+        "1": [
+          90,
+          50
+        ],
+        "2": [
+          110,
+          50
+        ]
+      }
+    },
+    {
+      "type": "led",
+      "reference": "D1",
+      "value": "LED_red",
+      "position": [
+        150,
+        50
+      ],
+      "pins": {
+        "anode": [
+          140,
+          50
+        ],
+        "cathode": [
+          160,
+          50
+        ]
+      }
+    }
+  ],
+  "wires": [
+    {
+      "from": {
+        "component": "U1",
+        "pin": "D13"
+      },
+      "to": {
+        "component": "R1",
+        "pin": "1"
+      },
+      "net": "LED_CONTROL"
+    },
+    {
+      "from": {
+        "component": "R1",
+        "pin": "2"
+      },
+      "to": {
+        "component": "D1",
+        "pin": "anode"
+      },
+      "net": "LED_ANODE"
+    },
+    {
+      "from": {
+        "component": "D1",
+        "pin": "cathode"
+      },
+      "to": {
+        "component": "U1",
+        "pin": "GND"
+      },
+      "net": "GND"
+    }
+  ],
+  "labels": []
+}

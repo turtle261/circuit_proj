@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500" height="300" xmlns="http://www.w3.org/2000/svg">
+  <title>Motor Control Circuit</title>
+
+  <!-- Background -->
+  <rect width="500" height="300" fill="white" stroke="black" stroke-width="1"/>
+
+  <!-- Arduino Uno -->
+  <rect x="20" y="50" width="80" height="60" fill="lightblue" stroke="black" stroke-width="1"/>
+  <text x="60" y="75" text-anchor="middle" font-family="Arial" font-size="12">Arduino</text>
+  <text x="60" y="90" text-anchor="middle" font-family="Arial" font-size="10">Uno R3</text>
+
+  <!-- Motor Driver -->
+  <rect x="200" y="60" width="60" height="40" fill="lightgreen" stroke="black" stroke-width="1"/>
+  <text x="230" y="75" text-anchor="middle" font-family="Arial" font-size="10">Motor</text>
+  <text x="230" y="88" text-anchor="middle" font-family="Arial" font-size="10">Driver</text>
+
+  <!-- Motor -->
+  <circle cx="350" cy="80" r="25" fill="gray" stroke="black" stroke-width="2"/>
+  <text x="350" y="85" text-anchor="middle" font-family="Arial" font-size="10">M</text>
+  <text x="350" y="120" text-anchor="middle" font-family="Arial" font-size="8">DC Motor</text>
+
+  <!-- Potentiometer -->
+  <rect x="40" y="150" width="40" height="15" fill="orange" stroke="black" stroke-width="1"/>
+  <text x="60" y="145" text-anchor="middle" font-family="Arial" font-size="8">Speed Control</text>
+  <text x="60" y="180" text-anchor="middle" font-family="Arial" font-size="8">10kΩ Pot</text>
+
+  <!-- Wires -->
+  <line x1="100" y1="70" x2="200" y2="70" stroke="red" stroke-width="2"/>
+  <line x1="260" y1="80" x2="325" y2="80" stroke="red" stroke-width="2"/>
+  <line x1="100" y1="90" x2="180" y2="90" stroke="blue" stroke-width="2"/>
+  <line x1="180" y1="90" x2="180" y2="157" stroke="blue" stroke-width="2"/>
+  <line x1="80" y1="157" x2="180" y2="157" stroke="blue" stroke-width="2"/>
+
+  <!-- Pin labels -->
+  <text x="105" y="65" font-family="Arial" font-size="8">D9 (PWM)</text>
+  <text x="105" y="105" font-family="Arial" font-size="8">A0</text>
+  <text x="105" y="125" font-family="Arial" font-size="8">GND</text>
+
+  <!-- Title -->
+  <text x="250" y="25" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">Motor Control Circuit</text>
+</svg>

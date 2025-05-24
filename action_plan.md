@@ -2,9 +2,9 @@
 
 This document outlines the actionable steps for implementing the development roadmap described in the `overview.md`.
 
-## Phase 1: Core Infrastructure (Months 1–3)
+## Phase 1: Core Infrastructure 
 
-**Objective:** Build a functional prototype with basic automation.
+**Objective:** Build a functional prototype with basic automation. Working **very** reliably for **very** simple circuits, and working generally experimentally well for more advanced circuits. 
 
 1.  **Project Setup:**
     *   Initialize a new Python project repository.
@@ -37,14 +37,16 @@ This document outlines the actionable steps for implementing the development roa
 
 6.  **Minimal Flask UI:**
     *   Set up a basic Flask application.
-    *   Create a simple form for user text input (e.g., "design an LED blinker").
+    *   Create a nice form for user text input(e.g. "LED that has brightness inverse to the loudness of the room" or any simple, but creative task.)
     *   Implement a backend endpoint to receive user input and trigger the CrewAI workflow.
-    *   Display the output (e.g., text description of the generated circuit, a basic representation if possible).
+    *   Display the output (e.g., text description of the generated circuit, a basic representation).
+    *   Show the Agent "thinking" or process nicely in a cool way that contributes to the user experience: have it show "designing the PCB"--"testing the PCB", etc in real time, accurately and relevant to what is actually happening.
+    *   Include visualization of the circuit, in a nice, user friendly way.
 
 7.  **Workflow Orchestration:**
     *   Set up the CrewAI process to orchestrate the `ResearchAgent`, `DesignAgent`, and `SimulationAgent` for simple circuit requests.
 
-**Deliverable:** A functional prototype capable of generating simple schematics (like an LED circuit) from text input, performing basic DC simulation, and displaying a basic output.
+**Deliverable:** A functional prototype capable of generating simple schematics (like any given form of LED circuit) from text input, performing basic DC simulation, and displaying a basic output.
 
 ## Phase 2: Enhanced Simulation and Code Generation (Months 4–6)
 
