@@ -38,6 +38,15 @@ except ImportError as e:
     PHASE_2_1_AVAILABLE = False
     logger.warning(f"Phase 2.1 tools not available: {e}")
 
+# Import Phase 2.2 PCB layout tools
+try:
+    from agents.tools.pcb_layout_tool import PCBLayoutTool
+    PHASE_2_2_AVAILABLE = True
+    logger.info("Phase 2.2 PCB layout tools loaded successfully")
+except ImportError as e:
+    PHASE_2_2_AVAILABLE = False
+    logger.warning(f"Phase 2.2 tools not available: {e}")
+
 def generate_files_from_crew_result(crew_result, user_input):
     """Generate schematic and code files based on CrewAI results."""
     import re
@@ -662,7 +671,54 @@ def run_design_process(user_input: str):
                              'circuit_type': 'custom'}
                 schematic_results = kicad_generator.create_led_schematic(components, './output')
         
-        # Stage 3: Completion
+        # Stage 4: PCB Layout Generation (Phase 2.2)
+        pcb_results = None
+        if PHASE_2_2_AVAILABLE:
+            try:
+                emit_progress('pcb', 'Generating PCB layout...', 85, 'Creating professional PCB design')
+                
+                # Initialize PCB layout tool
+                pcb_tool = PCBLayoutTool()
+                
+                # Prepare circuit data for PCB generation
+                circuit_data = {
+                    'circuit_type': circuit_type,
+                    'user_input': user_input,
+                    'components': {
+                        'resistor': resistor_selection,
+                        'led': led_selection
+                    },
+                    'crew_result': str(crew_result) if crew_result else None
+                }
+                
+                # Generate PCB layout
+                pcb_layout_result = pcb_tool._run(
+                    circuit_data=json.dumps(circuit_data),
+                    project_name=f"{circuit_type}_circuit",
+                    board_size="80x60",
+                    layer_count=2
+                )
+                
+                pcb_results = {
+                    'status': 'generated',
+                    'layout_result': pcb_layout_result,
+                    'manufacturing_files': True
+                }
+                
+                emit_progress('pcb', 'PCB layout complete!', 95, 'Manufacturing files generated')
+                
+            except Exception as e:
+                logger.warning(f"PCB layout generation failed: {e}")
+                pcb_results = {
+                    'status': 'failed',
+                    'error': str(e),
+                    'manufacturing_files': False
+                }
+                emit_progress('pcb', 'PCB layout skipped', 95, 'Continuing without PCB files')
+        else:
+            emit_progress('pcb', 'PCB layout not available', 95, 'Phase 2.2 tools not loaded')
+        
+        # Stage 5: Completion
         emit_progress('complete', 'Design complete!', 100, 'All files generated successfully')
         
         # Prepare comprehensive results
@@ -670,6 +726,7 @@ def run_design_process(user_input: str):
             'crew_result': str(crew_result) if crew_result else f"Circuit design completed for {circuit_type} circuit",
             'simulation': simulation_results,
             'schematic': schematic_results,
+            'pcb': pcb_results,
             'plot_data': plot_data,
             'circuit_type': circuit_type,
             'arduino_code': arduino_code,
@@ -679,7 +736,8 @@ def run_design_process(user_input: str):
             },
             'success': True,
             'crew_success': crew_success,
-            'phase_2_1_enabled': PHASE_2_1_AVAILABLE
+            'phase_2_1_enabled': PHASE_2_1_AVAILABLE,
+            'phase_2_2_enabled': PHASE_2_2_AVAILABLE
         }
         
         # Send final results

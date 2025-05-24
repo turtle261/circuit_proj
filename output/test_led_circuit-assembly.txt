@@ -1,0 +1,12 @@
+PCB ASSEMBLY DRAWING
+==================================================
+
+Board Size: 80.0 x 60.0 mm
+Layer Count: 2
+
+COMPONENT PLACEMENT:
+------------------------------
+U1       | (  55.0,   30.0) |   0.0° | microcontroller
+R1       | (  32.5,   43.0) |   0.0° | resistor
+D1       | (  32.5,   17.0) |   0.0° | led
+C1       | (  25.2,   10.0) |   0.0° | capacitor

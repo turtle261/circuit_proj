@@ -166,6 +166,23 @@ class CircuitDesignCrew:
         )
     
     @agent
+    def pcb_layout_agent(self) -> Agent:
+        # Import Phase 2.2 tools
+        from agents.tools.pcb_layout_tool import PCBLayoutTool, PCBVisualizationTool, ManufacturingValidationTool
+        
+        return Agent(
+            config=self.agents_config['pcb_layout_agent'],
+            llm=self._create_llm(),
+            tools=[PCBLayoutTool(), PCBVisualizationTool(), ManufacturingValidationTool()],
+            verbose=True,
+            max_rpm=10,
+            max_iter=5,
+            memory=True,
+            respect_context_window=True,
+            cache=True,
+        )
+    
+    @agent
     def code_generation_agent(self) -> Agent:
         return Agent(
             config=self.agents_config['code_generation_agent'],
@@ -220,6 +237,13 @@ class CircuitDesignCrew:
         )
     
     @task
+    def pcb_layout_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['pcb_layout_task'],
+            agent=self.pcb_layout_agent(),
+        )
+    
+    @task
     def code_generation_task(self) -> Task:
         return Task(
             config=self.tasks_config['code_generation_task'],
@@ -242,6 +266,7 @@ class CircuitDesignCrew:
                 self.design_agent(),
                 self.component_selection_agent(),
                 self.simulation_agent(),
+                self.pcb_layout_agent(),
                 self.code_generation_agent(),
                 self.documentation_agent()
             ],
@@ -250,6 +275,7 @@ class CircuitDesignCrew:
                 self.design_task(),
                 self.component_selection_task(),
                 self.simulation_task(),
+                self.pcb_layout_task(),
                 self.code_generation_task(),
                 self.documentation_task()
             ],

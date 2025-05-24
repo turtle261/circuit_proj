@@ -81,6 +81,27 @@ simulation_task:
     - recommendations: suggestions for improvements if needed
   agent: simulation_agent
 
+pcb_layout_task:
+  description: >
+    Generate professional PCB layout based on:
+    1. Circuit design and schematic from the design task
+    2. Component specifications from the component selection task
+    3. Simulation results and thermal analysis from the simulation task
+    4. Manufacturing requirements and constraints
+    
+    Create a complete PCB layout with automated placement, routing, and manufacturing files.
+  expected_output: >
+    Complete PCB layout package containing:
+    - pcb_layout: automated component placement and routing results
+    - manufacturing_files: Gerber files, drill files, and pick & place data
+    - assembly_documentation: assembly drawings and instructions
+    - bom_data: intelligent bill of materials with supplier information
+    - drc_results: design rule check results and recommendations
+    - thermal_analysis: thermal management assessment
+    - cost_analysis: manufacturing cost breakdown and optimization suggestions
+    - 3d_visualization: 3D PCB rendering and layout views
+  agent: pcb_layout_agent
+
 code_generation_task:
   description: >
     Generate Arduino code based on:
@@ -105,15 +126,18 @@ documentation_task:
     2. Circuit design from the design task
     3. Component selection from the component selection task
     4. Simulation results from the simulation task
-    5. Arduino code from the code generation task
+    5. PCB layout and manufacturing files from the pcb layout task
+    6. Arduino code from the code generation task
     
-    Compile into a user-friendly project guide.
+    Compile into a user-friendly project guide with complete manufacturing information.
   expected_output: >
     Complete project documentation containing:
     - project_overview: summary of functionality and features
     - bill_of_materials: detailed component list with suppliers
-    - assembly_instructions: step-by-step building guide
+    - pcb_manufacturing: PCB fabrication specifications and files
+    - assembly_instructions: step-by-step building guide with PCB assembly
     - code_explanation: detailed code walkthrough
     - troubleshooting: common issues and solutions
     - testing_procedures: how to verify the project works
+    - manufacturing_guide: how to order PCBs and components
   agent: documentation_agent 

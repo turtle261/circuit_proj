@@ -1,0 +1,11 @@
+TEST POINTS DOCUMENTATION
+==================================================
+
+RECOMMENDED TEST POINTS:
+- VCC: Power supply verification
+
+QUALITY CONTROL CHECKPOINTS:
+1. Visual inspection of solder joints
+2. Continuity testing of critical nets
+3. Power supply voltage verification
+4. Functional testing of key circuits

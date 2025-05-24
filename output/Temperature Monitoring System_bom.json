@@ -1,0 +1,76 @@
+{
+  "components": [
+    {
+      "group_id": "microcontroller",
+      "references": [
+        "C1"
+      ],
+      "quantity": 1,
+      "component_type": "microcontroller",
+      "description": "Arduino Uno R3",
+      "manufacturer": "Arduino",
+      "part_number": "A000066",
+      "unit_cost": 25.0,
+      "total_cost": 25.0,
+      "availability": "Limited Stock",
+      "lead_time": "4-6 weeks",
+      "supplier": "DigiKey"
+    },
+    {
+      "group_id": "ic",
+      "references": [
+        "C2",
+        "C3",
+        "C5"
+      ],
+      "quantity": 3,
+      "component_type": "ic",
+      "description": "ic component",
+      "manufacturer": "Generic",
+      "part_number": "TBD",
+      "unit_cost": 1.0,
+      "total_cost": 3.0,
+      "availability": "In Stock",
+      "lead_time": "1-2 weeks",
+      "supplier": "DigiKey"
+    },
+    {
+      "group_id": "resistor",
+      "references": [
+        "C4"
+      ],
+      "quantity": 1,
+      "component_type": "resistor",
+      "description": "0603 Resistor, 1% tolerance",
+      "manufacturer": "Yageo",
+      "part_number": "RC0603FR-07220RL",
+      "unit_cost": 0.02,
+      "total_cost": 0.02,
+      "availability": "In Stock",
+      "lead_time": "1-2 weeks",
+      "supplier": "DigiKey"
+    }
+  ],
+  "total_cost": 28.02,
+  "availability_status": "good",
+  "supplier_recommendations": [
+    {
+      "supplier": "LCSC",
+      "reason": "Cost-effective for low-value orders",
+      "estimated_savings": "15-25%"
+    },
+    {
+      "supplier": "Mouser",
+      "reason": "Good alternative source",
+      "estimated_savings": "Price matching available"
+    }
+  ],
+  "alternatives": [
+    {
+      "original_part": "A000066",
+      "alternative_part": "ALT-A000066",
+      "cost_savings": 5.0,
+      "notes": "Functionally equivalent, different manufacturer"
+    }
+  ]
+}
