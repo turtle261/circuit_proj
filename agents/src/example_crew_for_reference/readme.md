@@ -1,0 +1,1 @@
+# a general idea of how a CrewAI project is structured. This Crew works--that is, the code works--it's functionality depends on the model and the prompt, which requires experimentation.
