@@ -57,15 +57,25 @@ simulation_task:
     Perform comprehensive circuit simulation using the netlist and components from previous tasks:
     1. DC operating point analysis
     2. Transient analysis for time-dependent behavior
-    3. Validation of voltage and current levels
-    4. Check for potential issues or violations
-    5. Generate performance metrics and plots
+    3. AC analysis with frequency sweeps for Bode plots (Phase 2.1)
+    4. Noise analysis for low-noise circuit design (Phase 2.1)
+    5. Monte Carlo analysis for statistical validation (Phase 2.1)
+    6. Temperature analysis for thermal performance (Phase 2.1)
+    7. Performance metrics calculation (bandwidth, gain margins, etc.)
+    9. Check for potential issues or violations
+    10. Generate advanced performance metrics and plots
     
     Iterate with the design agent if issues are found.
   expected_output: >
     Complete simulation results containing:
-    - simulation_data: numerical results from all analyses
-    - performance_metrics: key performance indicators
+    - dc_analysis: DC operating point results
+    - transient_analysis: time-domain simulation results
+    - ac_analysis: frequency response and Bode plots (Phase 2.1)
+    - noise_analysis: noise performance metrics (Phase 2.1)
+    - monte_carlo_analysis: statistical analysis results (Phase 2.1)
+    - temperature_analysis: thermal performance data (Phase 2.1)
+    - performance_metrics: comprehensive performance indicators
+    - advanced_plots: Bode plots, noise plots, statistical distributions
     - plots: voltage/current waveforms and other visualizations
     - validation_status: pass/fail for design requirements
     - recommendations: suggestions for improvements if needed

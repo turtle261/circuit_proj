@@ -150,9 +150,13 @@ class CircuitDesignCrew:
     
     @agent
     def simulation_agent(self) -> Agent:
+        # Import Phase 2.1 tools
+        from agents.tools.advanced_simulation_tool import AdvancedSimulationTool, CircuitValidationTool
+        
         return Agent(
             config=self.agents_config['simulation_agent'],
             llm=self._create_llm(),
+            tools=[AdvancedSimulationTool(), CircuitValidationTool()],
             verbose=True,
             max_rpm=10,
             max_iter=5,
