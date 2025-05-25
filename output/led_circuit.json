@@ -1,7 +1,7 @@
 {
   "circuit_type": "led",
-  "user_input": "Create a circuit with an LED that turns on when a button is pressed",
-  "crew_analysis": "Circuit Design Analysis for: Create a circuit with an LED that turns on when a button is pressed\n\nNote: AI agents encountered an issue (1 validation error for Agent\n  Value error, Required function parameter 'circuit_data' not found in ...), but the system will continue with component selection and simulation.",
+  "user_input": "Design a circuit with a red LED that has brightness inverse to room loudness",
+  "crew_analysis": "Circuit Design Analysis for: Design a circuit with a red LED that has brightness inverse to room loudness\n\nNote: AI agents encountered an issue (litellm.RateLimitError: litellm.RateLimitError: VertexAIException - {\n  \"error\": {\n    \"code\": 429,\n...), but the system will continue with component selection and simulation.",
   "generated_files": [
     "led_circuit.svg",
     "led_circuit.ino",

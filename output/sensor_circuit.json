@@ -1,7 +1,7 @@
 {
   "circuit_type": "sensor",
-  "user_input": "Design a temperature monitoring circuit with Arduino, DS18B20 sensor, LCD display, and generate PCB layout with manufacturing files",
-  "crew_analysis": "Circuit Design Analysis for: Design a temperature monitoring circuit with Arduino, DS18B20 sensor, LCD display, and generate PCB layout with manufacturing files\n\nNote: AI agents encountered an issue (litellm.RateLimitError: litellm.RateLimitError: VertexAIException - {\n  \"error\": {\n    \"code\": 429,\n...), but the system will continue with component selection and simulation.",
+  "user_input": "Design a temperature sensor circuit with LCD display",
+  "crew_analysis": "Circuit Design Analysis for: Design a temperature sensor circuit with LCD display\n\nNote: AI agents encountered an issue (1 validation error for Agent\n  Value error, Required function parameter 'circuit_data' not found in ...), but the system will continue with component selection and simulation.",
   "generated_files": [
     "sensor_circuit.svg",
     "sensor_circuit.ino",

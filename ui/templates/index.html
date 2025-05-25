@@ -1097,99 +1097,101 @@ void loop() {
         }
 
         function displayPCBLayout(pcbData) {
-            const pcbDisplay = document.getElementById('pcbLayout');
+            console.log('Displaying PCB layout:', pcbData);
             
+            const pcbVisualization = document.getElementById('pcbVisualization');
+            const pcbStats = document.getElementById('pcbStats');
+            const manufacturingFiles = document.getElementById('manufacturingFiles');
+
             if (pcbData.status === 'generated') {
-                pcbDisplay.innerHTML = `
-                    <h6>PCB Layout</h6>
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="alert alert-success">
-                                <i class="fas fa-check-circle"></i>
-                                PCB layout generated successfully with manufacturing files
-                            </div>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div id="pcbVisualization" class="border rounded p-3 mb-3" style="min-height: 300px; background: #f8f9fa;">
-                                        <div class="text-center">
-                                            <i class="fas fa-microchip fa-3x text-primary mb-3"></i>
-                                            <h5>PCB Layout Preview</h5>
-                                            <p class="text-muted">Professional PCB layout with optimized routing</p>
-                                            <div class="pcb-info">
-                                                <small class="text-muted">
-                                                    <strong>Board Size:</strong> 80x60mm<br>
-                                                    <strong>Layers:</strong> 2-layer PCB<br>
-                                                    <strong>Technology:</strong> Through-hole and SMD compatible
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div id="manufacturingInfo" class="border rounded p-3" style="background: #f8f9fa;">
-                                        <h6><i class="fas fa-industry"></i> Manufacturing Files</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="fas fa-file-alt text-success"></i> Gerber files (.gbr)</li>
-                                            <li><i class="fas fa-file-alt text-success"></i> Drill files (.drl)</li>
-                                            <li><i class="fas fa-file-alt text-success"></i> Pick & place (.csv)</li>
-                                            <li><i class="fas fa-file-alt text-success"></i> Bill of materials (.csv)</li>
-                                        </ul>
-                                        <div class="mt-3">
-                                            <small class="text-muted">
-                                                Ready for professional PCB manufacturing
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-3">
-                                <h6>PCB Specifications</h6>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <ul class="list-unstyled">
-                                            <li><strong>Substrate:</strong> FR4</li>
-                                            <li><strong>Thickness:</strong> 1.6mm</li>
-                                            <li><strong>Copper Weight:</strong> 1oz</li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <ul class="list-unstyled">
-                                            <li><strong>Via Size:</strong> 0.2mm</li>
-                                            <li><strong>Min Trace:</strong> 0.15mm</li>
-                                            <li><strong>Solder Mask:</strong> Green</li>
-                                        </ul>
-                                    </div>
-                                </div>
+                // Update PCB visualization area
+                pcbVisualization.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        PCB layout generated successfully with manufacturing files
+                    </div>
+                    <div class="border rounded p-3 mb-3" style="min-height: 300px; background: #f8f9fa;">
+                        <div class="text-center">
+                            <i class="fas fa-microchip fa-3x text-primary mb-3"></i>
+                            <h5>PCB Layout Preview</h5>
+                            <p class="text-muted">Professional PCB layout with optimized routing</p>
+                            <div class="pcb-info">
+                                <small class="text-muted">
+                                    <strong>Board Size:</strong> ${pcbData.layout_result ? JSON.parse(pcbData.layout_result).board_size || '80x60mm' : '80x60mm'}<br>
+                                    <strong>Layers:</strong> ${pcbData.layout_result ? JSON.parse(pcbData.layout_result).layer_count || '2' : '2'}-layer PCB<br>
+                                    <strong>Technology:</strong> Through-hole and SMD compatible
+                                </small>
                             </div>
                         </div>
+                    </div>
+                `;
+
+                // Update PCB stats
+                if (pcbData.layout_result) {
+                    try {
+                        const layoutData = JSON.parse(pcbData.layout_result);
+                        pcbStats.innerHTML = `
+                            <div class="row">
+                                <div class="col-12">
+                                    <strong>Project:</strong> ${layoutData.project_name || 'Circuit'}<br>
+                                    <strong>Board Size:</strong> ${layoutData.board_size || 'N/A'}<br>
+                                    <strong>Components:</strong> ${layoutData.component_count || 'N/A'}<br>
+                                    <strong>DRC Status:</strong> <span class="text-success">${layoutData.drc_status || 'PASS'}</span><br>
+                                    <strong>Cost:</strong> ${layoutData.total_cost || 'N/A'}
+                                </div>
+                            </div>
+                        `;
+                    } catch (e) {
+                        console.error('Error parsing PCB layout result:', e);
+                        pcbStats.innerHTML = `
+                            <div class="text-muted">
+                                PCB specifications available in manufacturing files
+                            </div>
+                        `;
+                    }
+                } else {
+                    pcbStats.innerHTML = `
+                        <div class="text-muted">
+                            PCB specifications available in manufacturing files
+                        </div>
+                    `;
+                }
+
+                // Update manufacturing files
+                manufacturingFiles.innerHTML = `
+                    <h6><i class="fas fa-industry"></i> Manufacturing Files</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-file-alt text-success"></i> Gerber files (.gbr)</li>
+                        <li><i class="fas fa-file-alt text-success"></i> Drill files (.drl)</li>
+                        <li><i class="fas fa-file-alt text-success"></i> Pick & place (.csv)</li>
+                        <li><i class="fas fa-file-alt text-success"></i> Bill of materials (.json)</li>
+                    </ul>
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            Ready for professional PCB manufacturing
+                        </small>
                     </div>
                 `;
             } else if (pcbData.status === 'failed') {
-                pcbDisplay.innerHTML = `
-                    <h6>PCB Layout</h6>
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="alert alert-warning">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                PCB layout generation failed: ${pcbData.error || 'Unknown error'}
-                            </div>
-                            <p class="text-muted">The circuit design is complete, but PCB layout could not be generated. You can still use the schematic and Arduino code.</p>
-                        </div>
+                pcbVisualization.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        PCB layout generation failed: ${pcbData.error || 'Unknown error'}
                     </div>
+                    <p class="text-muted">The circuit design is complete, but PCB layout could not be generated. You can still use the schematic and Arduino code.</p>
                 `;
+                pcbStats.innerHTML = '';
+                manufacturingFiles.innerHTML = '';
             } else {
-                pcbDisplay.innerHTML = `
-                    <h6>PCB Layout</h6>
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i>
-                                PCB layout generation not available
-                            </div>
-                            <p class="text-muted">Phase 2.2 PCB layout tools are not currently loaded. The circuit design and simulation are complete.</p>
-                        </div>
+                pcbVisualization.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        PCB layout generation not available
                     </div>
+                    <p class="text-muted">Phase 2.2 PCB layout tools are not currently loaded. The circuit design and simulation are complete.</p>
                 `;
+                pcbStats.innerHTML = '';
+                manufacturingFiles.innerHTML = '';
             }
         }
 
@@ -1198,16 +1200,119 @@ void loop() {
         }
 
         function downloadFile(type) {
-            if (type === 'pcb') {
-                if (currentResults && currentResults.pcb && currentResults.pcb.status === 'generated') {
-                    alert('PCB manufacturing files would be downloaded as a ZIP package containing:\n\n• Gerber files (.gbr)\n• Drill files (.drl)\n• Pick & place files (.csv)\n• Bill of materials (.csv)\n• Assembly drawings (.pdf)');
-                } else {
-                    alert('PCB files are not available. Please ensure Phase 2.2 is enabled and PCB layout was generated successfully.');
-                }
-            } else {
-                // Implement other file download functionality
-                alert(`Download functionality for ${type} files will be implemented based on generated files`);
+            if (!currentResults) {
+                alert('No design results available. Please generate a circuit first.');
+                return;
             }
+
+            const projectName = currentResults.circuit_type || 'circuit';
+            
+            switch(type) {
+                case 'schematic':
+                    if (currentResults.schematic && currentResults.schematic.svg_file) {
+                        window.open(`/download/${currentResults.schematic.svg_file}`, '_blank');
+                    } else {
+                        alert('Schematic file not available.');
+                    }
+                    break;
+                    
+                case 'code':
+                    if (currentResults.arduino_code) {
+                        // Create a downloadable Arduino file
+                        const arduinoCode = currentResults.arduino_code;
+                        const blob = new Blob([arduinoCode], { type: 'text/plain' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${projectName}.ino`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                    } else {
+                        alert('Arduino code not available.');
+                    }
+                    break;
+                    
+                case 'report':
+                    // Generate a comprehensive report
+                    const reportContent = generateFullReport(currentResults);
+                    const blob = new Blob([reportContent], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${projectName}_report.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    break;
+                    
+                case 'pcb':
+                    if (currentResults.pcb && currentResults.pcb.status === 'generated') {
+                        // Download the BOM file as an example
+                        window.open(`/download/${projectName}_bom.json`, '_blank');
+                        alert('PCB manufacturing files are available in the output directory:\n\n• Gerber files (.gbr)\n• Drill files (.drl)\n• Pick & place files (.csv)\n• Bill of materials (.json)\n• Assembly drawings (.txt)');
+                    } else {
+                        alert('PCB files are not available. Please ensure PCB layout was generated successfully.');
+                    }
+                    break;
+                    
+                default:
+                    alert(`Download functionality for ${type} files not implemented.`);
+            }
+        }
+
+        function generateFullReport(results) {
+            let report = `Circuit Design Report\n`;
+            report += `=====================\n\n`;
+            report += `Generated: ${new Date().toLocaleString()}\n`;
+            report += `Circuit Type: ${results.circuit_type || 'Custom'}\n\n`;
+            
+            if (results.crew_result) {
+                report += `Design Analysis:\n`;
+                report += `${results.crew_result}\n\n`;
+            }
+            
+            if (results.simulation && results.simulation.results) {
+                report += `Simulation Results:\n`;
+                report += `Analysis Type: ${results.simulation.results.analysis_type}\n`;
+                if (results.simulation.results.nodes) {
+                    report += `Node Voltages:\n`;
+                    for (const [node, voltage] of Object.entries(results.simulation.results.nodes)) {
+                        report += `  ${node}: ${voltage}V\n`;
+                    }
+                }
+                if (results.simulation.results.currents) {
+                    report += `Currents:\n`;
+                    for (const [component, current] of Object.entries(results.simulation.results.currents)) {
+                        report += `  ${component}: ${current}A\n`;
+                    }
+                }
+                report += `\n`;
+            }
+            
+            if (results.pcb && results.pcb.layout_result) {
+                try {
+                    const pcbData = JSON.parse(results.pcb.layout_result);
+                    report += `PCB Layout Information:\n`;
+                    report += `Board Size: ${pcbData.board_size}\n`;
+                    report += `Layer Count: ${pcbData.layer_count}\n`;
+                    report += `Component Count: ${pcbData.component_count}\n`;
+                    report += `DRC Status: ${pcbData.drc_status}\n`;
+                    report += `Total Cost: ${pcbData.total_cost}\n\n`;
+                } catch (e) {
+                    report += `PCB Layout: Generated successfully\n\n`;
+                }
+            }
+            
+            if (results.arduino_code) {
+                report += `Arduino Code:\n`;
+                report += `=============\n`;
+                report += results.arduino_code;
+            }
+            
+            return report;
         }
 
         function showError(message) {

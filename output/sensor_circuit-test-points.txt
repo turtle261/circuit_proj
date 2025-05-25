@@ -2,7 +2,6 @@ TEST POINTS DOCUMENTATION
 ==================================================
 
 RECOMMENDED TEST POINTS:
-- GND: Power supply verification
 
 QUALITY CONTROL CHECKPOINTS:
 1. Visual inspection of solder joints

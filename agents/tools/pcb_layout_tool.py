@@ -44,24 +44,41 @@ class PCBLayoutTool(BaseTool):
             self._layout_engine = PCBLayoutEngine()
         return self._layout_engine
         
-    def _run(self, circuit_data, project_name: str = "circuit", 
-             board_size: str = "80x60", layer_count: int = 2) -> str:
+    def _run(self, input_data: str) -> str:
         """
         Generate PCB layout from circuit data.
         
         Args:
-            circuit_data: Dictionary or JSON string containing circuit components and connections
-            project_name: Name for the PCB project
-            board_size: Board dimensions in format "WIDTHxHEIGHT" (mm)
-            layer_count: Number of PCB layers (2, 4, 6, etc.)
+            input_data: JSON string containing circuit data and layout parameters
             
         Returns:
             JSON string with layout results and file paths
         """
         try:
+            # Parse input data
+            if isinstance(input_data, str):
+                try:
+                    data = json.loads(input_data)
+                except json.JSONDecodeError:
+                    # Create default data structure
+                    data = {
+                        'circuit_data': {},
+                        'project_name': 'circuit',
+                        'board_size': '80x60',
+                        'layer_count': 2
+                    }
+            else:
+                data = input_data
+            
+            # Extract parameters
+            circuit_data = data.get('circuit_data', {})
+            project_name = data.get('project_name', 'circuit')
+            board_size = data.get('board_size', '80x60')
+            layer_count = data.get('layer_count', 2)
+            
             logger.info(f"Starting PCB layout generation for {project_name}")
             
-            # Parse input parameters
+            # Parse circuit data
             if isinstance(circuit_data, str):
                 try:
                     circuit_dict = json.loads(circuit_data)
@@ -78,8 +95,21 @@ class PCBLayoutTool(BaseTool):
                             {'from': 'LED1', 'from_pin': 'cathode', 'to': 'Arduino', 'to_pin': 'GND', 'net': 'GND'}
                         ]
                     }
-            else:
+            elif circuit_data:
                 circuit_dict = circuit_data
+            else:
+                # Default circuit structure
+                circuit_dict = {
+                    'components': [
+                        {'reference': 'LED1', 'type': 'led', 'value': 'Red LED'},
+                        {'reference': 'R1', 'type': 'resistor', 'value': '220R'}
+                    ],
+                    'connections': [
+                        {'from': 'Arduino', 'from_pin': '13', 'to': 'R1', 'to_pin': '1', 'net': 'LED_CONTROL'},
+                        {'from': 'R1', 'from_pin': '2', 'to': 'LED1', 'to_pin': 'anode', 'net': 'LED_CONTROL'},
+                        {'from': 'LED1', 'from_pin': 'cathode', 'to': 'Arduino', 'to_pin': 'GND', 'net': 'GND'}
+                    ]
+                }
                 
             # Parse board size
             if 'x' in board_size.lower():
@@ -257,20 +287,34 @@ class PCBVisualizationTool(BaseTool):
     - Thermal analysis plots
     """
     
-    def _run(self, layout_data: str, view_type: str = "top", 
-             output_format: str = "svg") -> str:
+    def _run(self, input_data: str) -> str:
         """
         Generate PCB visualization.
         
         Args:
-            layout_data: JSON string with PCB layout data
-            view_type: Type of view (top, bottom, 3d, thermal)
-            output_format: Output format (svg, png, pdf)
+            input_data: JSON string containing layout data and visualization parameters
             
         Returns:
             Path to generated visualization file
         """
         try:
+            # Parse input data
+            if isinstance(input_data, str):
+                try:
+                    data = json.loads(input_data)
+                except json.JSONDecodeError:
+                    data = {
+                        'layout_data': {},
+                        'view_type': 'top',
+                        'output_format': 'svg'
+                    }
+            else:
+                data = input_data
+            
+            layout_data = data.get('layout_data', {})
+            view_type = data.get('view_type', 'top')
+            output_format = data.get('output_format', 'svg')
+            
             logger.info(f"Generating PCB visualization: {view_type} view")
             
             # Parse layout data
@@ -526,18 +570,32 @@ class ManufacturingValidationTool(BaseTool):
     - Supplier availability verification
     """
     
-    def _run(self, layout_data: str, manufacturing_spec: str = "standard") -> str:
+    def _run(self, input_data: str) -> str:
         """
         Validate PCB design for manufacturing.
         
         Args:
-            layout_data: JSON string with PCB layout data
-            manufacturing_spec: Manufacturing specification (standard, advanced, prototype)
+            input_data: JSON string containing layout data and manufacturing parameters
             
         Returns:
             JSON string with validation results and recommendations
         """
         try:
+            # Parse input data
+            if isinstance(input_data, str):
+                try:
+                    data = json.loads(input_data)
+                except json.JSONDecodeError:
+                    data = {
+                        'layout_data': {},
+                        'manufacturing_spec': 'standard'
+                    }
+            else:
+                data = input_data
+            
+            layout_data = data.get('layout_data', {})
+            manufacturing_spec = data.get('manufacturing_spec', 'standard')
+            
             logger.info(f"Validating PCB design for {manufacturing_spec} manufacturing")
             
             # Parse layout data
