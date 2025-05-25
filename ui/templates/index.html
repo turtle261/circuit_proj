@@ -347,6 +347,11 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="mt-3 text-center">
+                                        <button id="downloadAllPCBBtn" class="btn btn-success" style="display:none;">
+                                            <i class="fas fa-file-archive"></i> Download All PCB Files (ZIP)
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -368,6 +373,9 @@
                                     <i class="fas fa-download"></i> PCB Files
                                 </button>
                             </div>
+                            <button type="button" class="btn btn-outline-success" id="downloadAllPCBMainBtn" style="display:none;">
+                                <i class="fas fa-file-archive"></i> Download All PCB Files (ZIP)
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -554,6 +562,10 @@
             
             // Show download section
             document.getElementById('downloadSection').style.display = 'block';
+            // Show/hide Download All PCB button
+            const showPCBZip = data.pcb && data.pcb.status === 'generated';
+            document.getElementById('downloadAllPCBBtn').style.display = showPCBZip ? 'inline-block' : 'none';
+            document.getElementById('downloadAllPCBMainBtn').style.display = showPCBZip ? 'inline-block' : 'none';
         }
 
         function displayOverview(data) {
@@ -1327,6 +1339,23 @@ void loop() {
                 <p>Please try again with a different description or check the system status.</p>
             `;
         }
+
+        document.getElementById('downloadAllPCBBtn').onclick = function() {
+            if (!currentResults || !currentResults.circuit_type) {
+                alert('No design results available. Please generate a circuit first.');
+                return;
+            }
+            const projectName = currentResults.circuit_type;
+            window.open(`/download/pcb_zip/${projectName}`, '_blank');
+        };
+        document.getElementById('downloadAllPCBMainBtn').onclick = function() {
+            if (!currentResults || !currentResults.circuit_type) {
+                alert('No design results available. Please generate a circuit first.');
+                return;
+            }
+            const projectName = currentResults.circuit_type;
+            window.open(`/download/pcb_zip/${projectName}`, '_blank');
+        };
     </script>
 </body>
 </html> 

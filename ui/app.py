@@ -7,9 +7,11 @@ import logging
 import json
 import threading
 import time
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, send_file
 from flask_socketio import SocketIO, emit
 from dotenv import load_dotenv
+import zipfile
+import tempfile
 
 # Configure logging first
 logging.basicConfig(level=logging.INFO)
@@ -871,6 +873,39 @@ def view_file(filename):
     except Exception as e:
         logger.error(f"File view failed: {e}")
         return jsonify({'status': 'error', 'message': 'File not found'})
+
+@app.route('/download/pcb_zip/<project_name>')
+def download_pcb_zip(project_name):
+    """Zip all PCB manufacturing files for the given project and serve as a download."""
+    try:
+        output_dir = './output'
+        # Extensions to include
+        pcb_exts = ['.gbr', '.drl', '.csv', '.json', '.txt']
+        # Find all files for this project
+        files = [f for f in os.listdir(output_dir)
+                 if f.startswith(project_name) and os.path.splitext(f)[1].lower() in pcb_exts]
+        if not files:
+            return jsonify({'status': 'error', 'message': 'No PCB files found for this project.'}), 404
+        # Create a temporary zip file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_zip:
+            with zipfile.ZipFile(tmp_zip, 'w') as zipf:
+                for fname in files:
+                    zipf.write(os.path.join(output_dir, fname), arcname=fname)
+            zip_path = tmp_zip.name
+        # Serve the zip file and remove after sending
+        response = send_file(zip_path, as_attachment=True, download_name=f'{project_name}_pcb_files.zip')
+        # Schedule file removal after request
+        import atexit
+        def cleanup():
+            try:
+                os.remove(zip_path)
+            except Exception:
+                pass
+        atexit.register(cleanup)
+        return response
+    except Exception as e:
+        logger.error(f"PCB zip download failed: {e}")
+        return jsonify({'status': 'error', 'message': 'Failed to create PCB zip.'}), 500
 
 @socketio.on('connect')
 def handle_connect():
